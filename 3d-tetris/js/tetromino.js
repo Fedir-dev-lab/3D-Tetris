@@ -36,3 +36,9 @@ export function getRandomType() {
   const types = Object.keys(SHAPES);
   return types[Math.floor(Math.random() * types.length)];
 }
+
+export function getShapeHeight(type) {
+  const shape = SHAPES[type];
+  const maxRow = Math.max(...shape.cells.map(([x, y]) => y));
+  return maxRow; // індекс найнижчого рядка фігури (0-based)
+}

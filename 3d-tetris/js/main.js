@@ -1,21 +1,18 @@
-import * as THREE from 'three';
 import { scene, camera, renderer, controls } from './renderer.js';
 import { updateGame } from './game.js';
+import { createTetrominoMesh, getRandomType, getShapeHeight } from './tetromino.js';
 
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshStandardMaterial({ color: 0x00ff88 });
-const cube = new THREE.Mesh(geometry, material);
+const type = getRandomType();
+const piece = createTetrominoMesh(type);
+const shapeHeight = getShapeHeight(type);
 
-cube.position.set(0, 9, 0); // стартуємо вище, щоб бачити падіння
-cube.castShadow = true;
-cube.receiveShadow = true;
-
-scene.add(cube);
+piece.position.set(-1, 9, 0);
+scene.add(piece);
 
 function animate(timestamp) {
   requestAnimationFrame(animate);
 
-  updateGame(cube, timestamp);
+  updateGame(piece, timestamp, shapeHeight);
 
   controls.update();
   renderer.render(scene, camera);
