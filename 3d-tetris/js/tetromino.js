@@ -1,44 +1,80 @@
-import * as THREE from 'three';
-
-// Форми фігур: масив [x, y] координат клітинок у локальній 4x4 сітці
+// Усі 7 фігур, кожна має 4 стани обертання
+// Координати [col, row] відносно лівого верхнього кута обмежуючого прямокутника
 export const SHAPES = {
-  I: { cells: [[0,1],[1,1],[2,1],[3,1]], color: 0x00f0f0 },
-  O: { cells: [[1,0],[2,0],[1,1],[2,1]], color: 0xf0f000 },
-  T: { cells: [[1,0],[0,1],[1,1],[2,1]], color: 0xa000f0 },
-  S: { cells: [[1,0],[2,0],[0,1],[1,1]], color: 0x00f000 },
-  Z: { cells: [[0,0],[1,0],[1,1],[2,1]], color: 0xf00000 },
-  J: { cells: [[0,0],[0,1],[1,1],[2,1]], color: 0x0000f0 },
-  L: { cells: [[2,0],[0,1],[1,1],[2,1]], color: 0xf0a000 },
+  I: {
+    color: 0x00f0f0,
+    rotations: [
+      [[0,1],[1,1],[2,1],[3,1]],
+      [[2,0],[2,1],[2,2],[2,3]],
+      [[0,2],[1,2],[2,2],[3,2]],
+      [[1,0],[1,1],[1,2],[1,3]],
+    ]
+  },
+  O: {
+    color: 0xf0f000,
+    rotations: [
+      [[1,0],[2,0],[1,1],[2,1]],
+      [[1,0],[2,0],[1,1],[2,1]],
+      [[1,0],[2,0],[1,1],[2,1]],
+      [[1,0],[2,0],[1,1],[2,1]],
+    ]
+  },
+  T: {
+    color: 0xa000f0,
+    rotations: [
+      [[1,0],[0,1],[1,1],[2,1]],
+      [[0,0],[0,1],[1,1],[0,2]],
+      [[0,0],[1,0],[2,0],[1,1]],
+      [[1,0],[0,1],[1,1],[1,2]],
+    ]
+  },
+  S: {
+    color: 0x00f000,
+    rotations: [
+      [[1,0],[2,0],[0,1],[1,1]],
+      [[0,0],[0,1],[1,1],[1,2]],
+      [[1,0],[2,0],[0,1],[1,1]],
+      [[0,0],[0,1],[1,1],[1,2]],
+    ]
+  },
+  Z: {
+    color: 0xf00000,
+    rotations: [
+      [[0,0],[1,0],[1,1],[2,1]],
+      [[1,0],[0,1],[1,1],[0,2]],
+      [[0,0],[1,0],[1,1],[2,1]],
+      [[1,0],[0,1],[1,1],[0,2]],
+    ]
+  },
+  J: {
+    color: 0x0000f0,
+    rotations: [
+      [[0,0],[0,1],[1,1],[2,1]],
+      [[0,0],[1,0],[0,1],[0,2]],
+      [[0,0],[1,0],[2,0],[2,1]],
+      [[1,0],[1,1],[0,2],[1,2]],
+    ]
+  },
+  L: {
+    color: 0xf0a000,
+    rotations: [
+      [[2,0],[0,1],[1,1],[2,1]],
+      [[0,0],[0,1],[0,2],[1,2]],
+      [[0,0],[1,0],[2,0],[0,1]],
+      [[0,0],[1,0],[1,1],[1,2]],
+    ]
+  },
 };
 
-const CELL_SIZE = 1;
+export function getCells(type, rotation) {
+  return SHAPES[type].rotations[rotation % 4];
+}
 
-export function createTetrominoMesh(type) {
-  const shape = SHAPES[type];
-  const group = new THREE.Group();
-  group.userData.type = type;
-
-  const geometry = new THREE.BoxGeometry(CELL_SIZE, CELL_SIZE, CELL_SIZE);
-  const material = new THREE.MeshStandardMaterial({ color: shape.color });
-
-  shape.cells.forEach(([x, y]) => {
-    const cube = new THREE.Mesh(geometry, material);
-    cube.position.set(x * CELL_SIZE, -y * CELL_SIZE, 0);
-    cube.castShadow = true;
-    cube.receiveShadow = true;
-    group.add(cube);
-  });
-
-  return group;
+export function getColor(type) {
+  return SHAPES[type].color;
 }
 
 export function getRandomType() {
   const types = Object.keys(SHAPES);
   return types[Math.floor(Math.random() * types.length)];
-}
-
-export function getShapeHeight(type) {
-  const shape = SHAPES[type];
-  const maxRow = Math.max(...shape.cells.map(([x, y]) => y));
-  return maxRow; // індекс найнижчого рядка фігури (0-based)
 }

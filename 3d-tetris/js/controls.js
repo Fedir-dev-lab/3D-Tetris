@@ -1,30 +1,42 @@
-export function setupControls(piece, onMoveDown) {
+import { tryMove, tryRotate, dropStep } from './game.js';
+
+export function setupControls(state, onBoardUpdate) {
   window.addEventListener('keydown', (e) => {
+    if (!state.isRunning) return;
+
     switch (e.code) {
       case 'ArrowLeft':
       case 'KeyA':
-        piece.position.x -= 1;
+        tryMove(state, -1, 0);
         break;
 
       case 'ArrowRight':
       case 'KeyD':
-        piece.position.x += 1;
+        tryMove(state, 1, 0);
         break;
 
       case 'ArrowDown':
-      case 'KeyS':
-        onMoveDown(); // примусовий крок падіння (soft drop)
+      case 'KeyS': {
+        const result = dropStep(state);
+        if (result.locked) onBoardUpdate(result);
         break;
+      }
 
       case 'ArrowUp':
       case 'KeyW':
-        piece.rotation.z += Math.PI / 2; // поки проста візуальна ротація
+        tryRotate(state);
         break;
 
-      case 'Space':
-        e.preventDefault(); // щоб сторінка не скролилась
-        // хард-дроп зробимо пізніше, коли буде board.js з колізіями
+      case 'Space': {
+        e.preventDefault();
+        // Hard drop — падіння до упору
+        let result;
+        do {
+          result = dropStep(state);
+        } while (!result.locked && !result.gameOver);
+        onBoardUpdate(result);
         break;
+      }
     }
   });
 }
