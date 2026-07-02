@@ -1,6 +1,7 @@
-import { scene, camera, renderer, controls, updatePieceVisual, rebuildLockedVisual } from './renderer.js';
-import { createGameState, updateGame, dropStep } from './game.js';
-import { getCells, getColor } from './tetromino.js';
+import { renderer, camera, orbitControls, updatePieceVisual, rebuildLockedVisual } from './renderer.js';
+import { scene } from './renderer.js';
+import { createGameState, updateGame, getGhostY } from './game.js';
+import { getColor } from './tetromino.js';
 import { setupControls } from './controls.js';
 
 const state = createGameState();
@@ -8,7 +9,7 @@ const state = createGameState();
 function onBoardUpdate(result) {
   rebuildLockedVisual(state.board);
   if (result.gameOver) {
-    console.log('Game Over! Рахунок:', state.score, '| Ліній:', state.linesCleared);
+    console.log('Game Over! Рахунок:', state.score, '| Шарів:', state.linesCleared);
   }
 }
 
@@ -20,17 +21,15 @@ function animate(timestamp) {
   const result = updateGame(state, timestamp);
   if (result.locked) onBoardUpdate(result);
 
-  // Оновлюємо візуал поточної фігури кожен кадр
   if (state.isRunning && state.type) {
+    const ghostY = getGhostY(state);
     updatePieceVisual(
-      getCells(state.type, state.rotation),
-      state.col,
-      state.row,
-      getColor(state.type)
+      state.cells, state.ox, state.oy, state.oz,
+      getColor(state.type), ghostY
     );
   }
 
-  controls.update();
+  orbitControls.update();
   renderer.render(scene, camera);
 }
 
