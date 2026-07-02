@@ -1,32 +1,66 @@
-import { renderer, camera, orbitControls, updatePieceVisual, rebuildLockedVisual } from './renderer.js';
-import { scene } from './renderer.js';
-import { createGameState, updateGame, getGhostY } from './game.js';
+import {
+  renderer, camera, orbitControls, scene,
+  updatePieceVisual, rebuildLockedVisual
+} from './renderer.js';
+import { createGameState, startGame, updateGame, getGhostY } from './game.js';
 import { getColor } from './tetromino.js';
 import { setupControls } from './controls.js';
+import {
+  showMenu, showGame, showPause, hidePause,
+  showGameOver, showScores, showClearMessage,
+  updateHUD, bindMenuButtons
+} from './ui.js';
 
 const state = createGameState();
 
-function onBoardUpdate(result) {
+// ── Старт / рестарт ──────────────────────────────
+function onStart() {
+  startGame(state);
   rebuildLockedVisual(state.board);
-  if (result.gameOver) {
-    console.log('Game Over! Рахунок:', state.score, '| Шарів:', state.linesCleared);
-  }
+  showGame();
+  updateHUD(state.score, state.level, state.linesCleared);
 }
 
-setupControls(state, onBoardUpdate);
+// ── Пауза ────────────────────────────────────────
+function onPause() {
+  if (!state.isRunning) return;
+  state.isPaused = !state.isPaused;
+  if (state.isPaused) showPause();
+  else hidePause();
+}
 
+// ── Оновлення поля після фіксації фігури ─────────
+function onBoardUpdate(result) {
+  rebuildLockedVisual(state.board);
+  updateHUD(state.score, state.level, state.linesCleared);
+  if (result.linesCleared > 0) showClearMessage(result.linesCleared);
+  if (result.gameOver) showGameOver(state.score, state.level, state.linesCleared);
+}
+
+// ── Прив'язка кнопок меню ────────────────────────
+bindMenuButtons({
+  onStart:  onStart,
+  onScores: showScores,
+  onMenu:   showMenu,
+  onResume: onPause,
+});
+
+setupControls(state, onBoardUpdate, onPause);
+
+// ── Рендер-цикл ──────────────────────────────────
 function animate(timestamp) {
   requestAnimationFrame(animate);
 
-  const result = updateGame(state, timestamp);
-  if (result.locked) onBoardUpdate(result);
+  if (state.isRunning && !state.isPaused) {
+    const result = updateGame(state, timestamp);
+    if (result.locked) onBoardUpdate(result);
 
-  if (state.isRunning && state.type) {
-    const ghostY = getGhostY(state);
-    updatePieceVisual(
-      state.cells, state.ox, state.oy, state.oz,
-      getColor(state.type), ghostY
-    );
+    if (state.type) {
+      updatePieceVisual(
+        state.cells, state.ox, state.oy, state.oz,
+        getColor(state.type), getGhostY(state)
+      );
+    }
   }
 
   orbitControls.update();
@@ -34,3 +68,4 @@ function animate(timestamp) {
 }
 
 animate(0);
+showMenu();

@@ -7,7 +7,81 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
   <canvas id="game-canvas"></canvas>
+
+  <!-- HUD (під час гри) -->
+  <div id="hud" class="hidden">
+    <div class="hud-panel left-panel">
+      <div class="hud-block">
+        <div class="hud-label">РАХУНОК</div>
+        <div class="hud-value" id="score">0</div>
+      </div>
+      <div class="hud-block">
+        <div class="hud-label">РІВЕНЬ</div>
+        <div class="hud-value" id="level">1</div>
+      </div>
+      <div class="hud-block">
+        <div class="hud-label">ЛІНІЙ</div>
+        <div class="hud-value" id="lines">0</div>
+      </div>
+      <div class="hud-block controls-hint">
+        <div class="hud-label">КЕРУВАННЯ</div>
+        <div class="hint-row"><span class="key">A</span><span class="key">D</span> рух</div>
+        <div class="hint-row"><span class="key">S</span> вниз</div>
+        <div class="hint-row"><span class="key">Q</span><span class="key">E</span> камера</div>
+        <div class="hint-row"><span class="key">F</span><span class="key">H</span> обертання Y</div>
+        <div class="hint-row"><span class="key">R</span><span class="key">G</span> обертання X</div>
+        <div class="hint-row"><span class="key">ПРОБІЛ</span> дроп</div>
+        <div class="hint-row"><span class="key">P</span> пауза</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Головне меню -->
+  <div id="menu-screen" class="overlay">
+    <div class="overlay-box">
+      <div class="game-title">3D<br><span>TETRIS</span></div>
+      <button class="menu-btn primary" id="btn-start">Грати</button>
+      <button class="menu-btn" id="btn-scores">Рекорди</button>
+    </div>
+  </div>
+
+  <!-- Таблиця рекордів -->
+  <div id="scores-screen" class="overlay hidden">
+    <div class="overlay-box">
+      <div class="overlay-title">РЕКОРДИ</div>
+      <div id="scores-list"></div>
+      <button class="menu-btn" id="btn-scores-back">Назад</button>
+    </div>
+  </div>
+
+  <!-- Пауза -->
+  <div id="pause-screen" class="overlay hidden">
+    <div class="overlay-box">
+      <div class="overlay-title">ПАУЗА</div>
+      <button class="menu-btn primary" id="btn-resume">Продовжити</button>
+      <button class="menu-btn" id="btn-pause-menu">Головне меню</button>
+    </div>
+  </div>
+
+  <!-- Game Over -->
+  <div id="gameover-screen" class="overlay hidden">
+    <div class="overlay-box">
+      <div class="overlay-title">GAME OVER</div>
+      <div class="result-block">
+        <div class="result-row">Рахунок <span id="final-score">0</span></div>
+        <div class="result-row">Рівень <span id="final-level">0</span></div>
+        <div class="result-row">Ліній <span id="final-lines">0</span></div>
+      </div>
+      <div id="new-record" class="new-record hidden">🏆 Новий рекорд!</div>
+      <button class="menu-btn primary" id="btn-restart">Знову</button>
+      <button class="menu-btn" id="btn-gameover-menu">Головне меню</button>
+    </div>
+  </div>
+
+  <!-- Повідомлення про очищення ліній -->
+  <div id="clear-msg" class="clear-msg hidden"></div>
 
   <script type="importmap">
   {
@@ -17,7 +91,6 @@
     }
   }
   </script>
-
   <script type="module" src="js/main.js"></script>
 </body>
 </html>

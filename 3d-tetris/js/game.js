@@ -1,20 +1,40 @@
 import { createBoard, isValidPosition, lockPiece, clearLayers, BOARD_W, BOARD_D } from './board.js';
 import { getBaseCells, getColor, getRandomType, rotations } from './tetromino.js';
 
+// Швидкість за рівнем (мс між кроками)
+const LEVEL_SPEEDS = [800,700,600,500,420,350,280,220,160,100];
+
+function getSpeed(level) {
+  return LEVEL_SPEEDS[Math.min(level - 1, LEVEL_SPEEDS.length - 1)];
+}
+
 export function createGameState() {
   const state = {
     board: createBoard(),
     type: null,
     cells: null,
     ox: 0, oy: 0, oz: 0,
-    isRunning: true,
-    dropInterval: 800,
+    isRunning: false,
+    isPaused: false,
+    dropInterval: LEVEL_SPEEDS[0],
     lastDropTime: 0,
     score: 0,
     linesCleared: 0,
+    level: 1,
   };
-  spawnPiece(state);
   return state;
+}
+
+export function startGame(state) {
+  state.board = createBoard();
+  state.score = 0;
+  state.linesCleared = 0;
+  state.level = 1;
+  state.dropInterval = getSpeed(1);
+  state.isRunning = true;
+  state.isPaused = false;
+  state.lastDropTime = 0;
+  spawnPiece(state);
 }
 
 function spawnPiece(state) {
@@ -40,7 +60,6 @@ export function tryMove(state, dx, dy, dz) {
 
 function tryApplyRotation(state, rotFn) {
   const newCells = rotFn(state.cells);
-  // Спроба з wall kicks по X та Z
   for (const [kdx, kdz] of [[0,0],[-1,0],[1,0],[0,-1],[0,1],[-2,0],[2,0],[0,-2],[0,2]]) {
     if (isValidPosition(state.board, newCells, state.ox+kdx, state.oy, state.oz+kdz)) {
       state.cells = newCells;
@@ -67,8 +86,18 @@ export function dropStep(state) {
   if (!isValidPosition(state.board, state.cells, state.ox, state.oy + 1, state.oz)) {
     lockPiece(state.board, state.cells, state.ox, state.oy, state.oz, getColor(state.type));
     const cleared = clearLayers(state.board);
-    state.score += [0, 100, 300, 500, 800][Math.min(cleared, 4)];
+
+    const SCORES = [0, 100, 300, 500, 800];
+    state.score += (SCORES[Math.min(cleared, 4)] || 0) * state.level;
     state.linesCleared += cleared;
+
+    // Рівень — кожні 10 ліній
+    const newLevel = Math.floor(state.linesCleared / 10) + 1;
+    if (newLevel !== state.level) {
+      state.level = newLevel;
+      state.dropInterval = getSpeed(newLevel);
+    }
+
     spawnPiece(state);
     return { locked: true, linesCleared: cleared, gameOver: !state.isRunning };
   }
@@ -77,7 +106,9 @@ export function dropStep(state) {
 }
 
 export function updateGame(state, timestamp) {
-  if (!state.isRunning) return { locked: false, linesCleared: 0, gameOver: false };
+  if (!state.isRunning || state.isPaused) {
+    return { locked: false, linesCleared: 0, gameOver: false };
+  }
   if (timestamp - state.lastDropTime > state.dropInterval) {
     state.lastDropTime = timestamp;
     return dropStep(state);
