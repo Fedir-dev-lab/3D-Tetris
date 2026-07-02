@@ -233,3 +233,63 @@ html, body {
   70%  { opacity: 1; transform: translate(-50%, -50%) scale(1.0); }
   100% { opacity: 0; transform: translate(-50%, -60%) scale(1.0); }
 }
+/* ─── Налаштування ─── */
+.settings-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 8px 0 16px;
+}
+
+.settings-label {
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: #5588ff;
+  text-transform: uppercase;
+}
+
+.speed-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.speed-hint {
+  font-size: 11px;
+  color: #8899bb;
+  white-space: nowrap;
+}
+
+.speed-value-row {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #aabbff;
+  letter-spacing: 2px;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 200px;
+  height: 4px;
+  background: rgba(80, 140, 255, 0.2);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #5588ff;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(80, 140, 255, 0.7);
+  transition: box-shadow 0.2s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 18px rgba(80, 140, 255, 1);
+}

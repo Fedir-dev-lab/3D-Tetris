@@ -44,6 +44,7 @@
       <div class="game-title">3D<br><span>TETRIS</span></div>
       <button class="menu-btn primary" id="btn-start">Грати</button>
       <button class="menu-btn" id="btn-scores">Рекорди</button>
+      <button class="menu-btn" id="btn-settings">Налаштування</button>
     </div>
   </div>
 
@@ -56,6 +57,26 @@
     </div>
   </div>
 
+  <!-- Налаштування -->
+  <div id="settings-screen" class="overlay hidden">
+    <div class="overlay-box">
+      <div class="overlay-title">НАЛАШТУВАННЯ</div>
+      <div class="settings-group">
+        <div class="settings-label">Швидкість падіння</div>
+        <div class="speed-row">
+          <span class="speed-hint">Повільно</span>
+          <input type="range" id="speed-slider" min="1" max="10" value="5" step="1">
+          <span class="speed-hint">Швидко</span>
+        </div>
+        <div class="speed-value-row">
+          <span id="speed-label">Нормально</span>
+        </div>
+      </div>
+      <button class="menu-btn primary" id="btn-settings-save">Зберегти</button>
+      <button class="menu-btn" id="btn-settings-back">Назад</button>
+    </div>
+  </div>
+  
   <!-- Пауза -->
   <div id="pause-screen" class="overlay hidden">
     <div class="overlay-box">

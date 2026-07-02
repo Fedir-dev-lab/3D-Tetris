@@ -25,14 +25,15 @@ export function createGameState() {
   return state;
 }
 
-export function startGame(state) {
-  state.board = createBoard();
-  state.score = 0;
+export function startGame(state, baseInterval) {
+  state.board        = createBoard();
+  state.score        = 0;
   state.linesCleared = 0;
-  state.level = 1;
-  state.dropInterval = getSpeed(1);
-  state.isRunning = true;
-  state.isPaused = false;
+  state.level        = 1;
+  state.baseInterval = baseInterval;  // зберігаємо базу
+  state.dropInterval = baseInterval;
+  state.isRunning    = true;
+  state.isPaused     = false;
   state.lastDropTime = 0;
   spawnPiece(state);
 }
@@ -95,7 +96,8 @@ export function dropStep(state) {
     const newLevel = Math.floor(state.linesCleared / 10) + 1;
     if (newLevel !== state.level) {
       state.level = newLevel;
-      state.dropInterval = getSpeed(newLevel);
+      // Швидкість зростає на 15% кожен рівень, але не менше 80мс
+      state.dropInterval = Math.max(80, Math.round(state.baseInterval * Math.pow(0.85, newLevel - 1)));
     }
 
     spawnPiece(state);

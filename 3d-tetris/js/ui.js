@@ -1,31 +1,64 @@
 // ── Елементи ──────────────────────────────────────
-const hud           = document.getElementById('hud');
-const scoreEl       = document.getElementById('score');
-const levelEl       = document.getElementById('level');
-const linesEl       = document.getElementById('lines');
+const hud            = document.getElementById('hud');
+const scoreEl        = document.getElementById('score');
+const levelEl        = document.getElementById('level');
+const linesEl        = document.getElementById('lines');
 
-const menuScreen    = document.getElementById('menu-screen');
-const scoresScreen  = document.getElementById('scores-screen');
-const pauseScreen   = document.getElementById('pause-screen');
-const gameoverScreen= document.getElementById('gameover-screen');
-const clearMsg      = document.getElementById('clear-msg');
+const menuScreen     = document.getElementById('menu-screen');
+const scoresScreen   = document.getElementById('scores-screen');
+const settingsScreen = document.getElementById('settings-screen');
+const pauseScreen    = document.getElementById('pause-screen');
+const gameoverScreen = document.getElementById('gameover-screen');
+const clearMsg       = document.getElementById('clear-msg');
 
-const finalScore    = document.getElementById('final-score');
-const finalLevel    = document.getElementById('final-level');
-const finalLines    = document.getElementById('final-lines');
-const newRecordEl   = document.getElementById('new-record');
-const scoresList    = document.getElementById('scores-list');
+const finalScore     = document.getElementById('final-score');
+const finalLevel     = document.getElementById('final-level');
+const finalLines     = document.getElementById('final-lines');
+const newRecordEl    = document.getElementById('new-record');
+const scoresList     = document.getElementById('scores-list');
 
-// ── Рекорди (localStorage) ────────────────────────
+const speedSlider    = document.getElementById('speed-slider');
+const speedLabel     = document.getElementById('speed-label');
+
+// ── Налаштування ──────────────────────────────────
+const SETTINGS_KEY = 'tetris3d_settings';
+
+// Базові інтервали падіння для кожного рівня слайдера (1–10)
+const SPEED_BASE_MS = [1400, 1200, 1050, 900, 800, 650, 500, 380, 280, 180];
+
+const SPEED_NAMES = [
+  'Дуже повільно', 'Дуже повільно',
+  'Повільно',      'Повільно',
+  'Нормально',     'Нормально',
+  'Швидко',        'Швидко',
+  'Дуже швидко',   'Дуже швидко',
+];
+
+export function loadSettings() {
+  try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || { speed: 5 }; }
+  catch { return { speed: 5 }; }
+}
+
+function saveSettingsData(settings) {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+}
+
+// Базовий інтервал падіння згідно з налаштуванням
+export function getBaseInterval() {
+  const { speed } = loadSettings();
+  return SPEED_BASE_MS[Math.min(Math.max(speed - 1, 0), 9)];
+}
+
+// ── Рекорди ───────────────────────────────────────
 const STORAGE_KEY = 'tetris3d_scores';
 
 export function saveScore(score, level, lines) {
   const scores = loadScores();
   scores.push({ score, level, lines, date: new Date().toLocaleDateString('uk') });
   scores.sort((a, b) => b.score - a.score);
-  scores.splice(10); // зберігаємо топ-10
+  scores.splice(10);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(scores));
-  return scores[0].score === score; // true якщо новий рекорд
+  return scores[0].score === score && scores[0].level === level;
 }
 
 export function loadScores() {
@@ -33,14 +66,11 @@ export function loadScores() {
   catch { return []; }
 }
 
-export function getBestScore() {
-  const scores = loadScores();
-  return scores.length ? scores[0].score : 0;
-}
+// ── Показати / сховати екрани ─────────────────────
+const ALL_SCREENS = [menuScreen, scoresScreen, settingsScreen, pauseScreen, gameoverScreen];
 
-// ── Показати/сховати екрани ───────────────────────
 function hideAll() {
-  [menuScreen, scoresScreen, pauseScreen, gameoverScreen].forEach(s => s.classList.add('hidden'));
+  ALL_SCREENS.forEach(s => s.classList.add('hidden'));
 }
 
 export function showMenu() {
@@ -90,11 +120,23 @@ export function showScores() {
   scoresScreen.classList.remove('hidden');
 }
 
-// ── HUD ──────────────────────────────────────────
+export function showSettings() {
+  hideAll();
+  hud.classList.add('hidden');
+
+  // Завантажуємо поточне значення
+  const { speed } = loadSettings();
+  speedSlider.value = speed;
+  speedLabel.textContent = `${SPEED_NAMES[speed - 1]} (${speed})`;
+
+  settingsScreen.classList.remove('hidden');
+}
+
+// ── HUD ───────────────────────────────────────────
 export function updateHUD(score, level, lines) {
-  scoreEl.textContent = score;
-  levelEl.textContent = level;
-  linesEl.textContent = lines;
+  scoreEl.textContent  = score;
+  levelEl.textContent  = level;
+  linesEl.textContent  = lines;
 }
 
 // ── Повідомлення про очищення ─────────────────────
@@ -105,19 +147,32 @@ export function showClearMessage(count) {
   clearMsg.textContent = MSG[Math.min(count, 4)];
   clearMsg.classList.remove('hidden');
   clearMsg.style.animation = 'none';
-  clearMsg.offsetHeight; // reflow — перезапустити анімацію
+  clearMsg.offsetHeight;
   clearMsg.style.animation = '';
-  clearMsg.classList.remove('hidden');
   setTimeout(() => clearMsg.classList.add('hidden'), 850);
 }
 
-// ── Кнопки ───────────────────────────────────────
+// ── Прив'язка кнопок ──────────────────────────────
 export function bindMenuButtons(callbacks) {
-  document.getElementById('btn-start').onclick     = callbacks.onStart;
-  document.getElementById('btn-scores').onclick    = callbacks.onScores;
-  document.getElementById('btn-scores-back').onclick = callbacks.onMenu;
-  document.getElementById('btn-resume').onclick    = callbacks.onResume;
-  document.getElementById('btn-pause-menu').onclick  = callbacks.onMenu;
-  document.getElementById('btn-restart').onclick   = callbacks.onStart;
-  document.getElementById('btn-gameover-menu').onclick = callbacks.onMenu;
+  document.getElementById('btn-start').onclick          = callbacks.onStart;
+  document.getElementById('btn-scores').onclick         = callbacks.onScores;
+  document.getElementById('btn-settings').onclick       = callbacks.onSettings;
+  document.getElementById('btn-scores-back').onclick    = callbacks.onMenu;
+  document.getElementById('btn-settings-back').onclick  = callbacks.onMenu;
+  document.getElementById('btn-resume').onclick         = callbacks.onResume;
+  document.getElementById('btn-pause-menu').onclick     = callbacks.onMenu;
+  document.getElementById('btn-restart').onclick        = callbacks.onStart;
+  document.getElementById('btn-gameover-menu').onclick  = callbacks.onMenu;
+
+  // Слайдер — оновлює підпис у реальному часі
+  speedSlider.addEventListener('input', () => {
+    const v = Number(speedSlider.value);
+    speedLabel.textContent = `${SPEED_NAMES[v - 1]} (${v})`;
+  });
+
+  // Кнопка "Зберегти"
+  document.getElementById('btn-settings-save').onclick = () => {
+    saveSettingsData({ speed: Number(speedSlider.value) });
+    callbacks.onMenu();
+  };
 }

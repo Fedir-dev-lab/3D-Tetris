@@ -7,15 +7,16 @@ import { getColor } from './tetromino.js';
 import { setupControls } from './controls.js';
 import {
   showMenu, showGame, showPause, hidePause,
-  showGameOver, showScores, showClearMessage,
-  updateHUD, bindMenuButtons
+  showGameOver, showScores, showSettings, showClearMessage,
+  updateHUD, bindMenuButtons, getBaseInterval
 } from './ui.js';
 
 const state = createGameState();
 
 // ── Старт / рестарт ──────────────────────────────
 function onStart() {
-  startGame(state);
+  const baseInterval = getBaseInterval();
+  startGame(state, baseInterval);
   rebuildLockedVisual(state.board);
   showGame();
   updateHUD(state.score, state.level, state.linesCleared);
@@ -39,10 +40,11 @@ function onBoardUpdate(result) {
 
 // ── Прив'язка кнопок меню ────────────────────────
 bindMenuButtons({
-  onStart:  onStart,
-  onScores: showScores,
-  onMenu:   showMenu,
-  onResume: onPause,
+  onStart:    onStart,
+  onScores:   showScores,
+  onSettings: showSettings,
+  onMenu:     showMenu,
+  onResume:   onPause,
 });
 
 setupControls(state, onBoardUpdate, onPause);
