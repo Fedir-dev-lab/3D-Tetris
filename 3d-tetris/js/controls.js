@@ -28,7 +28,6 @@ export function setupControls(state, onBoardUpdate, onPause) {
         if (r.locked) onBoardUpdate(r);
         break;
       }
-
       case 'KeyH': tryRotateH(state); break;
       case 'KeyF': tryRotateF(state); break;
       case 'KeyR': tryRotateR(state); break;
@@ -38,6 +37,7 @@ export function setupControls(state, onBoardUpdate, onPause) {
         e.preventDefault();
         let r;
         do { r = dropStep(state); } while (!r.locked && !r.gameOver);
+        state._snapVisual?.();
         onBoardUpdate(r);
         break;
       }
