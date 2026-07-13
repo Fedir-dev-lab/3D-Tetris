@@ -7,7 +7,7 @@ import { getColor } from './tetromino.js';
 import { setupControls } from './controls.js';
 import {
   showMenu, showGame, showPause, hidePause,
-  showGameOver, showScores, showSettings, showClearMessage,
+  showGameOver, showScores, showSettings, showAbout, showClearMessage,
   updateHUD, bindMenuButtons, getBaseInterval
 } from './ui.js';
 
@@ -54,8 +54,12 @@ bindMenuButtons({
   onStart:    onStart,
   onScores:   showScores,
   onSettings: showSettings,
+  onAbout:    showAbout,
   onMenu:     showMenu,
   onResume:   onPause,
+  onExit: () => {
+    if (confirm('Справді вийти з гри?')) window.close();
+  },
 });
 
 setupControls(state, onBoardUpdate, onPause);

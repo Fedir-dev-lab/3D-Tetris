@@ -67,7 +67,8 @@ export function loadScores() {
 }
 
 // ── Показати / сховати екрани ─────────────────────
-const ALL_SCREENS = [menuScreen, scoresScreen, settingsScreen, pauseScreen, gameoverScreen];
+const aboutScreen    = document.getElementById('about-screen');
+const ALL_SCREENS = [menuScreen, scoresScreen, settingsScreen, aboutScreen, pauseScreen, gameoverScreen];
 
 function hideAll() {
   ALL_SCREENS.forEach(s => s.classList.add('hidden'));
@@ -132,6 +133,12 @@ export function showSettings() {
   settingsScreen.classList.remove('hidden');
 }
 
+export function showAbout() {
+  hideAll();
+  hud.classList.add('hidden');
+  aboutScreen.classList.remove('hidden');
+}
+
 // ── HUD ───────────────────────────────────────────
 export function updateHUD(score, level, lines) {
   scoreEl.textContent  = score;
@@ -163,6 +170,9 @@ export function bindMenuButtons(callbacks) {
   document.getElementById('btn-pause-menu').onclick     = callbacks.onMenu;
   document.getElementById('btn-restart').onclick        = callbacks.onStart;
   document.getElementById('btn-gameover-menu').onclick  = callbacks.onMenu;
+  document.getElementById('btn-about').onclick       = callbacks.onAbout;
+  document.getElementById('btn-about-back').onclick  = callbacks.onMenu;
+  document.getElementById('btn-exit').onclick        = callbacks.onExit;
 
   // Слайдер — оновлює підпис у реальному часі
   speedSlider.addEventListener('input', () => {
