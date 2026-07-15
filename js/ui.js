@@ -20,6 +20,14 @@ const scoresList     = document.getElementById('scores-list');
 const speedSlider    = document.getElementById('speed-slider');
 const speedLabel     = document.getElementById('speed-label');
 
+import { loadBindings, saveBindings, resetBindings, getKeyLabel, ACTION_LABELS, DEFAULT_BINDINGS } from './bindings.js';
+
+// ── Стан прив'язки клавіш ──────────────────────
+let tempBindings     = {};
+let pendingAction    = null;
+let captureListener  = null;
+const bindingBtns    = {};
+
 // ── Налаштування ──────────────────────────────────
 const SETTINGS_KEY = 'tetris3d_settings';
 
@@ -124,11 +132,14 @@ export function showScores() {
 export function showSettings() {
   hideAll();
   hud.classList.add('hidden');
+  cancelCapture();
 
-  // Завантажуємо поточне значення
   const { speed } = loadSettings();
   speedSlider.value = speed;
   speedLabel.textContent = `${SPEED_NAMES[speed - 1]} (${speed})`;
+
+  tempBindings = loadBindings();
+  rebuildBindingsUI();
 
   settingsScreen.classList.remove('hidden');
 }
@@ -159,6 +170,82 @@ export function showClearMessage(count) {
   setTimeout(() => clearMsg.classList.add('hidden'), 850);
 }
 
+function cancelCapture() {
+  if (!pendingAction) return;
+  const btn = bindingBtns[pendingAction];
+  if (btn) {
+    btn.classList.remove('capturing');
+    btn.textContent = getKeyLabel(tempBindings[pendingAction]);
+  }
+  if (captureListener) {
+    window.removeEventListener('keydown', captureListener, true);
+    captureListener = null;
+  }
+  pendingAction = null;
+}
+
+function rebuildBindingsUI() {
+  const list = document.getElementById('bindings-list');
+  if (!list) return;
+  list.innerHTML = '';
+
+  for (const [action, label] of Object.entries(ACTION_LABELS)) {
+    const row = document.createElement('div');
+    row.className = 'binding-row';
+
+    const actionEl = document.createElement('span');
+    actionEl.className = 'binding-action';
+    actionEl.textContent = label;
+
+    const btn = document.createElement('button');
+    btn.className = 'binding-key';
+    btn.textContent = getKeyLabel(tempBindings[action]);
+    bindingBtns[action] = btn;
+
+    btn.addEventListener('click', () => {
+      cancelCapture();
+      pendingAction = action;
+      btn.textContent = '...';
+      btn.classList.add('capturing');
+
+      captureListener = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (e.code === 'Escape') {
+          cancelCapture();
+          return;
+        }
+
+        // Конфлікт — міняємо місцями
+        const conflict = Object.keys(tempBindings).find(
+          a => a !== action && tempBindings[a] === e.code
+        );
+        if (conflict) {
+          tempBindings[conflict] = tempBindings[action];
+          if (bindingBtns[conflict]) {
+            bindingBtns[conflict].textContent = getKeyLabel(tempBindings[conflict]);
+            bindingBtns[conflict].classList.remove('conflict');
+          }
+        }
+
+        tempBindings[action] = e.code;
+        window.removeEventListener('keydown', captureListener, true);
+        captureListener = null;
+        pendingAction = null;
+        btn.classList.remove('capturing');
+        btn.textContent = getKeyLabel(e.code);
+      };
+
+      window.addEventListener('keydown', captureListener, true);
+    });
+
+    row.appendChild(actionEl);
+    row.appendChild(btn);
+    list.appendChild(row);
+  }
+}
+
 // ── Прив'язка кнопок ──────────────────────────────
 export function bindMenuButtons(callbacks) {
   document.getElementById('btn-start').onclick          = callbacks.onStart;
@@ -173,6 +260,17 @@ export function bindMenuButtons(callbacks) {
   document.getElementById('btn-about').onclick       = callbacks.onAbout;
   document.getElementById('btn-about-back').onclick  = callbacks.onMenu;
   document.getElementById('btn-exit').onclick        = callbacks.onExit;
+  document.getElementById('btn-reset-bindings').onclick = () => {
+    tempBindings = resetBindings();
+    rebuildBindingsUI();
+  };
+
+  document.getElementById('btn-settings-save').onclick = () => {
+    cancelCapture();
+    saveSettingsData({ speed: Number(speedSlider.value) });
+    saveBindings(tempBindings);
+    callbacks.onMenu();
+  };
 
   // Слайдер — оновлює підпис у реальному часі
   speedSlider.addEventListener('input', () => {

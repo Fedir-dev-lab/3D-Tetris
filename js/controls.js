@@ -1,46 +1,48 @@
 import { tryMove, tryRotateH, tryRotateF, tryRotateR, tryRotateG, dropStep } from './game.js';
 import { rotateCameraLeft, rotateCameraRight, getCameraStep } from './renderer.js';
+import { loadBindings } from './bindings.js';
 
 const MOVE_DIRS = [
-  { A: [-1, 0, 0], D: [ 1, 0, 0] },
-  { A: [ 0, 0,-1], D: [ 0, 0, 1] },
-  { A: [ 1, 0, 0], D: [-1, 0, 0] },
-  { A: [ 0, 0, 1], D: [ 0, 0,-1] },
+  { moveLeft: [-1,0, 0], moveRight: [ 1,0, 0] },
+  { moveLeft: [ 0,0,-1], moveRight: [ 0,0, 1] },
+  { moveLeft: [ 1,0, 0], moveRight: [-1,0, 0] },
+  { moveLeft: [ 0,0, 1], moveRight: [ 0,0,-1] },
 ];
 
 export function setupControls(state, onBoardUpdate, onPause) {
   window.addEventListener('keydown', (e) => {
-    if (e.code === 'KeyQ') { rotateCameraLeft();  return; }
-    if (e.code === 'KeyE') { rotateCameraRight(); return; }
-    if (e.code === 'KeyP') { onPause(); return; }
+    const b    = loadBindings();
+    const code = e.code;
+
+    if (code === b.cameraLeft)  { rotateCameraLeft();  return; }
+    if (code === b.cameraRight) { rotateCameraRight(); return; }
+    if (code === b.pause)       { onPause();           return; }
 
     if (!state.isRunning || state.isPaused) return;
 
     const dir = MOVE_DIRS[getCameraStep()];
 
-    switch (e.code) {
-      case 'KeyA': tryMove(state, ...dir.A); break;
-      case 'KeyD': tryMove(state, ...dir.D); break;
+    if (code === b.moveLeft)  { tryMove(state, ...dir.moveLeft);  return; }
+    if (code === b.moveRight) { tryMove(state, ...dir.moveRight); return; }
 
-      case 'KeyS':
-      case 'ArrowDown': {
-        const r = dropStep(state);
-        if (r.locked) onBoardUpdate(r);
-        break;
-      }
-      case 'KeyH': tryRotateH(state); break;
-      case 'KeyF': tryRotateF(state); break;
-      case 'KeyR': tryRotateR(state); break;
-      case 'KeyG': tryRotateG(state); break;
+    if (code === b.softDrop) {
+      const r = dropStep(state);
+      if (r.locked) onBoardUpdate(r);
+      return;
+    }
 
-      case 'Space': {
-        e.preventDefault();
-        let r;
-        do { r = dropStep(state); } while (!r.locked && !r.gameOver);
-        state._snapVisual?.();
-        onBoardUpdate(r);
-        break;
-      }
+    if (code === b.rotateH) { tryRotateH(state); return; }
+    if (code === b.rotateF) { tryRotateF(state); return; }
+    if (code === b.rotateR) { tryRotateR(state); return; }
+    if (code === b.rotateG) { tryRotateG(state); return; }
+
+    if (code === b.hardDrop) {
+      e.preventDefault();
+      let r;
+      do { r = dropStep(state); } while (!r.locked && !r.gameOver);
+      state._snapVisual?.();
+      onBoardUpdate(r);
+      return;
     }
   });
 }
