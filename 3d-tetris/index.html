@@ -1,10 +1,36 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Tetris</title>
-  <link rel="stylesheet" href="css/style.css">
+    <!-- Базові налаштування -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <!-- Рекомендовано для ігор, щоб уникнути зуму -->
+    
+    <!-- Назва додатку (з name / short_name) -->
+    <title>3D Tetris</title>
+
+    <!-- Підключення самого файлу маніфесту (переконайтеся, що файл називається manifest.json) -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Колір теми браузера (з theme_color) -->
+    <meta name="theme-color" content="#3f2e6b">
+
+    <!-- Стандартний Favicon з кореневої папки -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <!-- Сучасна іконка у форматі PNG (з маніфесту) -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/web-app-manifest-192x192.png">
+
+    <!-- === ПІДТРИМКА APPLE iOS (Safari) === -->
+    <!-- Safari не завжди повністю читає маніфест, тому ці теги обов'язкові для iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes"> <!-- Аналог "display": "standalone" -->
+    <meta name="apple-mobile-web-app-title" content="3D Tetris"> <!-- Назва на робочому столі iOS -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> <!-- Стиль верхньої панелі -->
+    <link rel="apple-touch-icon" href="/web-app-manifest-192x192.png"> <!-- Іконка для iOS -->
+
+    <!-- === ПІДТРИМКА WINDOWS === -->
+    <meta name="application-name" content="3D Tetris">
+    <meta name="msapplication-TileColor" content="#1b7493"> <!-- Колір плитки Windows (з background_color) -->
+
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
@@ -37,6 +63,18 @@
       </div>
     </div>
   </div>
+
+    <!-- Правий панель -->
+    <div class="hud-panel right-panel">
+      <div class="hud-block preview-block">
+        <div class="hud-label">ЗАРАЗ</div>
+        <canvas id="current-canvas" width="120" height="120"></canvas>
+      </div>
+      <div class="hud-block preview-block">
+        <div class="hud-label">НАСТУПНА</div>
+        <canvas id="next-canvas" width="120" height="120"></canvas>
+      </div>
+    </div>
 
   <!-- Головне меню -->
   <div id="menu-screen" class="overlay">

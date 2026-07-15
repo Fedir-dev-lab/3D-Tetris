@@ -3,27 +3,23 @@ import {
   updatePieceVisual, rebuildLockedVisual
 } from './renderer.js';
 import { createGameState, startGame, updateGame, dropStep, getGhostY } from './game.js';
-import { getColor } from './tetromino.js';
+import { getColor, getBaseCells } from './tetromino.js';
 import { setupControls } from './controls.js';
 import {
   showMenu, showGame, showPause, hidePause,
-  showGameOver, showScores, showSettings, showAbout, showClearMessage,
-  updateHUD, bindMenuButtons, getBaseInterval
+  showGameOver, showScores, showSettings, showAbout,
+  showClearMessage, updateHUD, bindMenuButtons, getBaseInterval
 } from './ui.js';
+import { initPreviews, setPreviewPiece, resetPreviews, renderPreviews } from './preview.js';
 
-const state = createGameState();
-
-// Візуальна позиція — лише для рендера, логіка її не знає
-let visualOy = 0;
-let prevTimestamp = 0;
-let snapNext = false; // миттєвий стрибок (після hard drop)
+const state    = createGameState();
+const previews = initPreviews();
 
 // ── Старт ────────────────────────────────────────
 function onStart() {
   const baseInterval = getBaseInterval();
   startGame(state, baseInterval);
-  visualOy = state.oy;
-  snapNext = false;
+  resetPreviews(previews);
   rebuildLockedVisual(state.board);
   showGame();
   updateHUD(state.score, state.level, state.linesCleared);
@@ -44,9 +40,8 @@ function onBoardUpdate(result) {
   if (result.linesCleared > 0) showClearMessage(result.linesCleared);
   if (result.gameOver) showGameOver(state.score, state.level, state.linesCleared);
 
-  // Після фіксації — нова фігура зверху, стрибаємо без анімації
-  visualOy = state.oy;
-  snapNext = false;
+  visualOy  = state.oy;
+  snapNext  = false;
 }
 
 // ── Кнопки меню ──────────────────────────────────
@@ -64,11 +59,18 @@ bindMenuButtons({
 
 setupControls(state, onBoardUpdate, onPause);
 
+// ── Візуальна позиція (lerp) ──────────────────────
+let visualOy       = 0;
+let prevTimestamp  = 0;
+let snapNext       = false;
+
+state._snapVisual = () => { snapNext = true; };
+
 // ── Рендер-цикл ──────────────────────────────────
 function animate(timestamp) {
   requestAnimationFrame(animate);
 
-  const delta = Math.min(timestamp - prevTimestamp, 100); // cap щоб не стрибало після blur
+  const delta = Math.min(timestamp - prevTimestamp, 100) / 1000;
   prevTimestamp = timestamp;
 
   if (state.isRunning && !state.isPaused) {
@@ -78,22 +80,17 @@ function animate(timestamp) {
     if (result.locked) {
       onBoardUpdate(result);
     } else if (state.oy !== prevOy) {
-      // Логічний крок відбувся — запускаємо анімацію з попередньої позиції
       visualOy = prevOy;
     }
 
     if (state.type) {
       if (snapNext) {
-        // Hard drop або пробіл — миттєвий стрибок
         visualOy = state.oy;
         snapNext = false;
       } else {
-        // Lerp: часова константа ~60мс — встигає за будь-якого dropInterval
-        const tau = Math.min(state.dropInterval * 0.35, 80);
+        const tau    = Math.min(state.dropInterval * 0.35, 80) / 1000;
         const factor = 1 - Math.exp(-delta / tau);
-        visualOy += (state.oy - visualOy) * factor;
-
-        // Snap якщо дуже близько
+        visualOy    += (state.oy - visualOy) * factor;
         if (Math.abs(visualOy - state.oy) < 0.008) visualOy = state.oy;
       }
 
@@ -101,15 +98,31 @@ function animate(timestamp) {
         state.cells, state.ox, visualOy, state.oz,
         getColor(state.type), getGhostY(state)
       );
+
+      // Оновлюємо прев'ю (лише коли тип змінився)
+      setPreviewPiece(
+        previews.current,
+        state.type,
+        getBaseCells(state.type),
+        getColor(state.type)
+      );
+      if (state.nextType) {
+        setPreviewPiece(
+          previews.next,
+          state.nextType,
+          state.nextCells,
+          getColor(state.nextType)
+        );
+      }
     }
   }
 
   orbitControls.update();
   renderer.render(scene, camera);
-}
 
-// Передаємо snap-функцію в controls через глобальний стан
-state._snapVisual = () => { snapNext = true; };
+  // Рендер прев'ю (з повільним обертанням)
+  renderPreviews(previews, delta);
+}
 
 animate(0);
 showMenu();
