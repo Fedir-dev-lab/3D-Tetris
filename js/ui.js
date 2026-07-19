@@ -1,3 +1,5 @@
+import { getAudioCfg, setAudioCfg, sfx, startMusic, stopMusic } from './audio.js';
+
 // ── Елементи ──────────────────────────────────────
 const hud            = document.getElementById('hud');
 const scoreEl        = document.getElementById('score');
@@ -138,6 +140,12 @@ export function showSettings() {
   speedSlider.value = speed;
   speedLabel.textContent = `${SPEED_NAMES[speed - 1]} (${speed})`;
 
+  const audioCfg = getAudioCfg();
+  document.getElementById('sfx-toggle').checked = audioCfg.sfxOn;
+  document.getElementById('sfx-vol').value       = Math.round(audioCfg.sfxVol * 100);
+  document.getElementById('music-toggle').checked = audioCfg.musicOn;
+  document.getElementById('music-vol').value      = Math.round(audioCfg.musicVol * 100);
+
   tempBindings = loadBindings();
   rebuildBindingsUI();
 
@@ -247,40 +255,55 @@ function rebuildBindingsUI() {
 }
 
 // ── Прив'язка кнопок ──────────────────────────────
-export function bindMenuButtons(callbacks) {
-  document.getElementById('btn-start').onclick          = callbacks.onStart;
-  document.getElementById('btn-scores').onclick         = callbacks.onScores;
-  document.getElementById('btn-settings').onclick       = callbacks.onSettings;
-  document.getElementById('btn-scores-back').onclick    = callbacks.onMenu;
-  document.getElementById('btn-settings-back').onclick  = callbacks.onMenu;
-  document.getElementById('btn-resume').onclick         = callbacks.onResume;
-  document.getElementById('btn-pause-menu').onclick     = callbacks.onMenu;
-  document.getElementById('btn-restart').onclick        = callbacks.onStart;
-  document.getElementById('btn-gameover-menu').onclick  = callbacks.onMenu;
-  document.getElementById('btn-about').onclick       = callbacks.onAbout;
-  document.getElementById('btn-about-back').onclick  = callbacks.onMenu;
-  document.getElementById('btn-exit').onclick        = callbacks.onExit;
-  document.getElementById('btn-reset-bindings').onclick = () => {
-    tempBindings = resetBindings();
-    rebuildBindingsUI();
-  };
+export function click(fn) { return () => { sfx.menuClick(); fn(); }; }
 
+let callbacks = {}; // Створюємо об'єкт для зберігання колбеків
+
+// Експортуємо функцію, яку викликає main.js
+export function bindMenuButtons(cb) {
+  callbacks = cb;
+
+  document.getElementById('btn-start').onclick          = click(callbacks.onStart);
+  document.getElementById('btn-scores').onclick         = click(callbacks.onScores);
+  document.getElementById('btn-settings').onclick       = click(callbacks.onSettings);
+  document.getElementById('btn-about').onclick          = click(callbacks.onAbout);
+  document.getElementById('btn-exit').onclick           = click(callbacks.onExit);
+  document.getElementById('btn-scores-back').onclick    = click(callbacks.onMenu);
+  document.getElementById('btn-settings-back').onclick  = click(callbacks.onMenu);
+  document.getElementById('btn-resume').onclick         = click(callbacks.onResume);
+  document.getElementById('btn-pause-menu').onclick     = click(callbacks.onMenu);
+  document.getElementById('btn-restart').onclick        = click(callbacks.onStart);
+  document.getElementById('btn-gameover-menu').onclick  = click(callbacks.onMenu);
+  document.getElementById('btn-about-back').onclick     = click(callbacks.onMenu);
+  document.getElementById('btn-reset-bindings').onclick = () => { sfx.menuClick(); tempBindings = resetBindings(); rebuildBindingsUI(); };
+
+  // Кнопка збереження налаштувань також використовує callbacks.onMenu
   document.getElementById('btn-settings-save').onclick = () => {
+    sfx.menuClick();
     cancelCapture();
     saveSettingsData({ speed: Number(speedSlider.value) });
     saveBindings(tempBindings);
     callbacks.onMenu();
   };
-
-  // Слайдер — оновлює підпис у реальному часі
-  speedSlider.addEventListener('input', () => {
-    const v = Number(speedSlider.value);
-    speedLabel.textContent = `${SPEED_NAMES[v - 1]} (${v})`;
-  });
-
-  // Кнопка "Зберегти"
-  document.getElementById('btn-settings-save').onclick = () => {
-    saveSettingsData({ speed: Number(speedSlider.value) });
-    callbacks.onMenu();
-  };
 }
+
+// Аудіо-контроли залишаються поза функцією, оскільки вони не залежать від callbacks
+document.getElementById('sfx-toggle').addEventListener('change', (e) => {
+  setAudioCfg({ sfxOn: e.target.checked });
+});
+document.getElementById('sfx-vol').addEventListener('input', (e) => {
+  setAudioCfg({ sfxVol: e.target.value / 100 });
+  sfx.menuClick();
+});
+document.getElementById('music-toggle').addEventListener('change', (e) => {
+  setAudioCfg({ musicOn: e.target.checked });
+  if (e.target.checked) startMusic(); else stopMusic();
+});
+document.getElementById('music-vol').addEventListener('input', (e) => {
+  setAudioCfg({ musicVol: e.target.value / 100 });
+});
+
+speedSlider.addEventListener('input', () => {
+  const v = Number(speedSlider.value);
+  speedLabel.textContent = `${SPEED_NAMES[v - 1]} (${v})`;
+});

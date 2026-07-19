@@ -1,6 +1,7 @@
 import { tryMove, tryRotateH, tryRotateF, tryRotateR, tryRotateG, dropStep } from './game.js';
 import { rotateCameraLeft, rotateCameraRight, getCameraStep } from './renderer.js';
 import { loadBindings } from './bindings.js';
+import { sfx } from './audio.js';
 
 const MOVE_DIRS = [
   { moveLeft: [-1,0, 0], moveRight: [ 1,0, 0] },
@@ -22,22 +23,24 @@ export function setupControls(state, onBoardUpdate, onPause) {
 
     const dir = MOVE_DIRS[getCameraStep()];
 
-    if (code === b.moveLeft)  { tryMove(state, ...dir.moveLeft);  return; }
-    if (code === b.moveRight) { tryMove(state, ...dir.moveRight); return; }
+    if (code === b.moveLeft)  { if (tryMove(state, ...dir.moveLeft))  sfx.move();   return; }
+    if (code === b.moveRight) { if (tryMove(state, ...dir.moveRight)) sfx.move();   return; }
+
+    if (code === b.rotateH) { if (tryRotateH(state)) sfx.rotate(); return; }
+    if (code === b.rotateF) { if (tryRotateF(state)) sfx.rotate(); return; }
+    if (code === b.rotateR) { if (tryRotateR(state)) sfx.rotate(); return; }
+    if (code === b.rotateG) { if (tryRotateG(state)) sfx.rotate(); return; }
 
     if (code === b.softDrop) {
+      sfx.softDrop();
       const r = dropStep(state);
       if (r.locked) onBoardUpdate(r);
       return;
     }
 
-    if (code === b.rotateH) { tryRotateH(state); return; }
-    if (code === b.rotateF) { tryRotateF(state); return; }
-    if (code === b.rotateR) { tryRotateR(state); return; }
-    if (code === b.rotateG) { tryRotateG(state); return; }
-
     if (code === b.hardDrop) {
       e.preventDefault();
+      sfx.hardDrop();
       let r;
       do { r = dropStep(state); } while (!r.locked && !r.gameOver);
       state._snapVisual?.();

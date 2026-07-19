@@ -108,28 +108,31 @@ export function dropStep(state) {
     state.score += (SCORES[Math.min(cleared, 4)] || 0) * state.level;
     state.linesCleared += cleared;
 
-    // Рівень — кожні 10 ліній
+    const oldLevel = state.level;
     const newLevel = Math.floor(state.linesCleared / 10) + 1;
     if (newLevel !== state.level) {
-      state.level = newLevel;
-      // Швидкість зростає на 15% кожен рівень, але не менше 80мс
+      state.level        = newLevel;
       state.dropInterval = Math.max(80, Math.round(state.baseInterval * Math.pow(0.85, newLevel - 1)));
     }
 
     spawnPiece(state);
-    return { locked: true, linesCleared: cleared, gameOver: !state.isRunning };
+    return {
+      locked: true, linesCleared: cleared,
+      gameOver: !state.isRunning,
+      leveledUp: state.level !== oldLevel,
+    };
   }
   state.oy++;
-  return { locked: false, linesCleared: 0, gameOver: false };
+  return { locked: false, linesCleared: 0, gameOver: false, leveledUp: false };
 }
 
 export function updateGame(state, timestamp) {
   if (!state.isRunning || state.isPaused) {
-    return { locked: false, linesCleared: 0, gameOver: false };
+    return { locked: false, linesCleared: 0, gameOver: false, leveledUp: false };
   }
   if (timestamp - state.lastDropTime > state.dropInterval) {
     state.lastDropTime = timestamp;
     return dropStep(state);
   }
-  return { locked: false, linesCleared: 0, gameOver: false };
+  return { locked: false, linesCleared: 0, gameOver: false, leveledUp: false };
 }

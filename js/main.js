@@ -8,14 +8,19 @@ import { setupControls } from './controls.js';
 import {
   showMenu, showGame, showPause, hidePause,
   showGameOver, showScores, showSettings, showAbout,
-  showClearMessage, updateHUD, bindMenuButtons, getBaseInterval
+  showClearMessage, updateHUD, getBaseInterval,
+  bindMenuButtons // <--- ОСЬ ЦЕЙ РЯДОК ОБОВ'ЯЗКОВИЙ
 } from './ui.js';
 import { initPreviews, setPreviewPiece, resetPreviews, renderPreviews } from './preview.js';
+import { initAudio, sfx, startMusic, stopMusic } from './audio.js';
+
+// ── Ініціалізація ────────────────────────────────
+initAudio();
 
 const state    = createGameState();
 const previews = initPreviews();
 
-// ── Старт ────────────────────────────────────────
+// ── Старт / рестарт ──────────────────────────────
 function onStart() {
   const baseInterval = getBaseInterval();
   startGame(state, baseInterval);
@@ -23,6 +28,8 @@ function onStart() {
   rebuildLockedVisual(state.board);
   showGame();
   updateHUD(state.score, state.level, state.linesCleared);
+  stopMusic();
+  startMusic();
 }
 
 // ── Пауза ────────────────────────────────────────
@@ -37,10 +44,20 @@ function onPause() {
 function onBoardUpdate(result) {
   rebuildLockedVisual(state.board);
   updateHUD(state.score, state.level, state.linesCleared);
-  if (result.linesCleared > 0) showClearMessage(result.linesCleared);
-  if (result.gameOver) showGameOver(state.score, state.level, state.linesCleared);
 
-  visualOy  = state.oy;
+  if (result.locked)          sfx.lock();
+  if (result.linesCleared > 0) {
+    sfx.clear(result.linesCleared);
+    showClearMessage(result.linesCleared);
+  }
+  if (result.leveledUp)       sfx.levelUp();
+  if (result.gameOver) {
+    sfx.gameOver();
+    stopMusic();
+    showGameOver(state.score, state.level, state.linesCleared);
+  }
+
+  visualOy = state.oy;
   snapNext  = false;
 }
 
@@ -60,9 +77,9 @@ bindMenuButtons({
 setupControls(state, onBoardUpdate, onPause);
 
 // ── Візуальна позиція (lerp) ──────────────────────
-let visualOy       = 0;
-let prevTimestamp  = 0;
-let snapNext       = false;
+let visualOy      = 0;
+let prevTimestamp = 0;
+let snapNext      = false;
 
 state._snapVisual = () => { snapNext = true; };
 
@@ -99,28 +116,15 @@ function animate(timestamp) {
         getColor(state.type), getGhostY(state)
       );
 
-      // Оновлюємо прев'ю (лише коли тип змінився)
-      setPreviewPiece(
-        previews.current,
-        state.type,
-        getBaseCells(state.type),
-        getColor(state.type)
-      );
+      setPreviewPiece(previews.current, state.type, getBaseCells(state.type), getColor(state.type));
       if (state.nextType) {
-        setPreviewPiece(
-          previews.next,
-          state.nextType,
-          state.nextCells,
-          getColor(state.nextType)
-        );
+        setPreviewPiece(previews.next, state.nextType, state.nextCells, getColor(state.nextType));
       }
     }
   }
 
   orbitControls.update();
   renderer.render(scene, camera);
-
-  // Рендер прев'ю (з повільним обертанням)
   renderPreviews(previews, delta);
 }
 
