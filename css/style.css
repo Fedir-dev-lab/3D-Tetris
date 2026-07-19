@@ -846,3 +846,86 @@ input[type="range"]::-webkit-slider-thumb:hover {
   .left-panel { top: 8px; transform: none; }
   .right-panel { top: 8px; transform: none; }
 }
+
+/* ═══════════════════════════════════════
+   МОБІЛЬНА АДАПТАЦІЯ
+═══════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* HUD — горизонтальна смужка зверху */
+  #hud { pointer-events: none; }
+
+  .left-panel {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    bottom: auto;
+    transform: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-start;
+  }
+
+  .hud-block {
+    padding: 6px 10px;
+    min-width: unset;
+    flex: 0 0 auto;
+  }
+
+  .hud-label {
+    font-size: 8px;
+    letter-spacing: 2px;
+    margin-bottom: 1px;
+  }
+
+  .hud-value {
+    font-size: 18px;
+  }
+
+  /* Ховаємо підказки клавіш — є кнопки */
+  .controls-hint { display: none !important; }
+
+  /* Правий панель — під лівим або збоку */
+  .right-panel {
+    position: fixed;
+    top: 8px;
+    right: 8px;
+    transform: none;
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .preview-block {
+    padding: 6px 8px 8px;
+  }
+
+  #current-canvas,
+  #next-canvas {
+    width: 72px;
+    height: 72px;
+  }
+
+  .hud-label { font-size: 8px; }
+
+  /* Overlay boxes — на весь екран */
+  .overlay-box {
+    padding: 24px 20px;
+    width: 92vw;
+    max-width: 400px;
+  }
+
+  .game-title { font-size: 38px; }
+  .game-title span { font-size: 26px; }
+  .menu-btn { width: 100%; font-size: 13px; }
+  .settings-box { padding: 20px 16px; }
+}
+
+/* Дуже маленькі екрани */
+@media (max-width: 400px) {
+  .right-panel { display: none; }
+
+  .hud-value { font-size: 15px; }
+  .hud-block { padding: 4px 8px; }
+}

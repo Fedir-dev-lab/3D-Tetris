@@ -156,6 +156,17 @@ let cameraStep = 0; // 0=NE, 1=NW, 2=SW, 3=SE
 
 export function getCameraStep() { return cameraStep; }
 
+// Адаптивна позиція камери
+const isMobile = window.innerWidth <= 768;
+if (isMobile) {
+  camera.position.set(10, boardCenterY + 4, 10);
+  camera.fov = 65;
+} else {
+  camera.position.set(14, boardCenterY + 8, 14);
+  camera.fov = 50;
+}
+camera.updateProjectionMatrix();
+
 export function rotateCameraLeft() {
   // Q — поворот камери на 90° проти годинникової стрілки
   const t = orbitControls.target;
@@ -178,6 +189,11 @@ export function rotateCameraRight() {
 
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
+
+  // Адаптуємо FOV при зміні орієнтації
+  const isMob = window.innerWidth <= 768;
+  camera.fov  = isMob ? 65 : 50;
+
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
