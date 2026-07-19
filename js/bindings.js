@@ -3,7 +3,8 @@ const BINDINGS_KEY = 'tetris3d_bindings';
 export const DEFAULT_BINDINGS = {
   moveLeft:    'KeyA',
   moveRight:   'KeyD',
-  softDrop:    'KeyS',
+  moveForward: 'KeyW',
+  moveBack:    'KeyS',
   hardDrop:    'Space',
   rotateH:     'KeyH',
   rotateF:     'KeyF',
@@ -15,9 +16,10 @@ export const DEFAULT_BINDINGS = {
 };
 
 export const ACTION_LABELS = {
-  moveLeft:    'Рух ліворуч',
-  moveRight:   'Рух праворуч',
-  softDrop:    'Прискорити',
+  moveLeft:    'Рух ліворуч  (X-)',
+  moveRight:   'Рух праворуч (X+)',
+  moveForward: 'Рух вглиб    (Z-)',
+  moveBack:    'Рух назовні  (Z+)',
   hardDrop:    'Хард-дроп',
   rotateH:     'Поворот Y →',
   rotateF:     'Поворот Y ←',

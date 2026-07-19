@@ -53,11 +53,12 @@
       </div>
       <div class="hud-block controls-hint">
         <div class="hud-label">КЕРУВАННЯ</div>
-        <div class="hint-row"><span class="key">A</span><span class="key">D</span> рух</div>
-        <div class="hint-row"><span class="key">S</span> вниз</div>
+        <div class="hint-row"><span class="key">W</span><span class="key">S</span> вглиб / назовні</div>
+        <div class="hint-row"><span class="key">A</span><span class="key">D</span> ліво / право</div>
+        <div class="hint-row"><span class="key">↓</span> прискорити</div>
         <div class="hint-row"><span class="key">Q</span><span class="key">E</span> камера</div>
-        <div class="hint-row"><span class="key">F</span><span class="key">H</span> обертання Y</div>
-        <div class="hint-row"><span class="key">R</span><span class="key">G</span> обертання X</div>
+        <div class="hint-row"><span class="key">F</span><span class="key">H</span> поворот Y</div>
+        <div class="hint-row"><span class="key">R</span><span class="key">G</span> поворот X</div>
         <div class="hint-row"><span class="key">ПРОБІЛ</span> дроп</div>
         <div class="hint-row"><span class="key">P</span> пауза</div>
       </div>
@@ -105,34 +106,6 @@
       </div>
 
       <div class="settings-divider"></div>
-
-      <div class="settings-group">
-        <div class="settings-label">Звук</div>
-        <div class="toggle-row">
-          <span class="toggle-label">Звукові ефекти</span>
-          <label class="toggle">
-            <input type="checkbox" id="sfx-toggle" checked>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-        <div class="vol-row">
-          <span class="vol-icon">🔈</span>
-          <input type="range" id="sfx-vol" min="0" max="100" value="50" step="1">
-          <span class="vol-icon">🔊</span>
-        </div>
-        <div class="toggle-row">
-          <span class="toggle-label">Музика</span>
-          <label class="toggle">
-            <input type="checkbox" id="music-toggle" checked>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-        <div class="vol-row">
-          <span class="vol-icon">🔈</span>
-          <input type="range" id="music-vol" min="0" max="100" value="22" step="1">
-          <span class="vol-icon">🔊</span>
-        </div>
-      </div>
       
       <div class="about-divider"></div>
 
@@ -185,11 +158,11 @@
     </div>
   </div>
 
-  <!-- Налаштування -->
   <div id="settings-screen" class="overlay hidden">
     <div class="overlay-box settings-box">
       <div class="overlay-title">НАЛАШТУВАННЯ</div>
 
+      <!-- Швидкість -->
       <div class="settings-group">
         <div class="settings-label">Швидкість падіння</div>
         <div class="speed-row">
@@ -201,6 +174,56 @@
           <span id="speed-label">Нормально</span>
         </div>
       </div>
+
+      <div class="settings-divider"></div>
+
+      <!-- Звук -->
+      <div class="settings-group">
+        <div class="settings-label">Звук</div>
+
+        <div class="toggle-row">
+          <span class="toggle-label">Звукові ефекти</span>
+          <label class="toggle">
+            <input type="checkbox" id="sfx-toggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="vol-row">
+          <span class="vol-icon">🔈</span>
+          <input type="range" id="sfx-vol" min="0" max="100" value="50" step="1">
+          <span class="vol-icon">🔊</span>
+        </div>
+
+        <div class="toggle-row">
+          <span class="toggle-label">Музика</span>
+          <label class="toggle">
+            <input type="checkbox" id="music-toggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="vol-row">
+          <span class="vol-icon">🔈</span>
+          <input type="range" id="music-vol" min="0" max="100" value="22" step="1">
+          <span class="vol-icon">🔊</span>
+        </div>
+      </div>
+
+      <div class="settings-divider"></div>
+
+      <!-- Клавіші -->
+      <div class="settings-group">
+        <div class="settings-label">Клавіші керування</div>
+        <div class="bindings-hint">Натисни на клавішу щоб перебіндити · ESC — скасувати</div>
+        <div id="bindings-list" class="bindings-list"></div>
+        <button class="menu-btn small" id="btn-reset-bindings">↺ Скинути до стандартних</button>
+      </div>
+
+      <div class="settings-actions">
+        <button class="menu-btn primary" id="btn-settings-save">Зберегти</button>
+        <button class="menu-btn" id="btn-settings-back">Назад</button>
+      </div>
+    </div>
+  </div>
 
       <div class="settings-divider"></div>
 
