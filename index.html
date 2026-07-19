@@ -277,5 +277,60 @@
   }
   </script>
   <script type="module" src="js/main.js"></script>
+
+  <!-- Мобільне керування -->
+  <div id="mobile-controls" class="hidden">
+
+    <!-- Верхня панель -->
+    <div class="mb-top-bar">
+      <button class="mb-btn mb-cam" id="mb-cam-left">Q<br><span>cam</span></button>
+      <button class="mb-btn mb-pause-btn" id="mb-pause">⏸</button>
+      <button class="mb-btn mb-cam" id="mb-cam-right">E<br><span>cam</span></button>
+    </div>
+
+    <!-- Нижня зона -->
+    <div class="mb-bottom-zone">
+
+      <!-- Лівий D-pad: рух -->
+      <div class="mb-dpad">
+        <div class="mb-dpad-row">
+          <button class="mb-btn mb-dpad-btn" id="mb-move-forward">▲<br><span>W</span></button>
+        </div>
+        <div class="mb-dpad-row">
+          <button class="mb-btn mb-dpad-btn" id="mb-move-left">◀<br><span>A</span></button>
+          <div class="mb-dpad-center"></div>
+          <button class="mb-btn mb-dpad-btn" id="mb-move-right">▶<br><span>D</span></button>
+        </div>
+        <div class="mb-dpad-row">
+          <button class="mb-btn mb-dpad-btn" id="mb-move-back">▼<br><span>S</span></button>
+        </div>
+        <div class="mb-dpad-label">РУХ</div>
+      </div>
+
+      <!-- Центр: drop кнопки -->
+      <div class="mb-center-btns">
+        <button class="mb-btn mb-drop-soft" id="mb-soft-drop">↓<br><span>soft</span></button>
+        <button class="mb-btn mb-drop-hard" id="mb-hard-drop">⬇<br><span>drop</span></button>
+      </div>
+
+      <!-- Правий D-pad: обертання -->
+      <div class="mb-dpad">
+        <div class="mb-dpad-row">
+          <button class="mb-btn mb-dpad-btn mb-rot" id="mb-rot-r">▲<br><span>R</span></button>
+        </div>
+        <div class="mb-dpad-row">
+          <button class="mb-btn mb-dpad-btn mb-rot" id="mb-rot-f">◀<br><span>F</span></button>
+          <div class="mb-dpad-center"></div>
+          <button class="mb-btn mb-dpad-btn mb-rot" id="mb-rot-h">▶<br><span>H</span></button>
+        </div>
+        <div class="mb-dpad-row">
+          <button class="mb-btn mb-dpad-btn mb-rot" id="mb-rot-g">▼<br><span>G</span></button>
+        </div>
+        <div class="mb-dpad-label">ПОВОРОТ</div>
+      </div>
+
+    </div>
+  </div>
+  
 </body>
 </html>

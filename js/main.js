@@ -1,3 +1,10 @@
+import { tryMove, tryRotateH, tryRotateF, tryRotateR, tryRotateG } from './game.js';
+import { rotateCameraLeft, rotateCameraRight } from './renderer.js';
+
+const MOVE_DIRS_FIXED = {
+  left:  [-1, 0, 0],
+  right: [ 1, 0, 0],
+};
 import {
   renderer, camera, orbitControls, scene,
   updatePieceVisual, rebuildLockedVisual
@@ -13,6 +20,7 @@ import {
 } from './ui.js';
 import { initPreviews, setPreviewPiece, resetPreviews, renderPreviews } from './preview.js';
 import { initAudio, sfx, startMusic, stopMusic } from './audio.js';
+import { initMobileControls } from './mobile.js';
 
 // ── Ініціалізація ────────────────────────────────
 initAudio();
@@ -130,3 +138,42 @@ function animate(timestamp) {
 
 animate(0);
 showMenu();
+
+// ── Мобільне керування ────────────────────────────
+initMobileControls({
+  moveLeft:    () => { if (!state.isRunning || state.isPaused) return;
+                       const d = MOVE_DIRS_FIXED.left;
+                       if (tryMove(state, ...d)) sfx.move(); },
+  moveRight:   () => { if (!state.isRunning || state.isPaused) return;
+                       const d = MOVE_DIRS_FIXED.right;
+                       if (tryMove(state, ...d)) sfx.move(); },
+  moveForward: () => { if (!state.isRunning || state.isPaused) return;
+                       if (tryMove(state, 0, 0, -1)) sfx.move(); },
+  moveBack:    () => { if (!state.isRunning || state.isPaused) return;
+                       if (tryMove(state, 0, 0,  1)) sfx.move(); },
+  rotateH: () => { if (!state.isRunning || state.isPaused) return;
+                   if (tryRotateH(state)) sfx.rotate(); },
+  rotateF: () => { if (!state.isRunning || state.isPaused) return;
+                   if (tryRotateF(state)) sfx.rotate(); },
+  rotateR: () => { if (!state.isRunning || state.isPaused) return;
+                   if (tryRotateR(state)) sfx.rotate(); },
+  rotateG: () => { if (!state.isRunning || state.isPaused) return;
+                   if (tryRotateG(state)) sfx.rotate(); },
+  softDrop: () => {
+    if (!state.isRunning || state.isPaused) return;
+    sfx.softDrop();
+    const r = dropStep(state);
+    if (r.locked) onBoardUpdate(r);
+  },
+  hardDrop: () => {
+    if (!state.isRunning || state.isPaused) return;
+    sfx.hardDrop();
+    let r;
+    do { r = dropStep(state); } while (!r.locked && !r.gameOver);
+    state._snapVisual?.();
+    onBoardUpdate(r);
+  },
+  cameraLeft:  () => rotateCameraLeft(),
+  cameraRight: () => rotateCameraRight(),
+  pause:       () => onPause(),
+});

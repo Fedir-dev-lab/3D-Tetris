@@ -652,3 +652,197 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 .vol-icon { font-size: 14px; }
 .vol-row input[type="range"] { flex: 1; }
+
+/* ═══════════════════════════════════════
+   МОБІЛЬНЕ КЕРУВАННЯ
+═══════════════════════════════════════ */
+
+#mobile-controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 50;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+#mobile-controls.hidden { display: none !important; }
+
+/* ── Верхня панель ── */
+.mb-top-bar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 16px;
+  pointer-events: all;
+}
+
+/* ── Нижня зона ── */
+.mb-bottom-zone {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px 10px;
+  pointer-events: all;
+}
+
+/* ── D-pad ── */
+.mb-dpad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  position: relative;
+}
+
+.mb-dpad-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.mb-dpad-center {
+  width: 44px;
+  height: 44px;
+}
+
+.mb-dpad-label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: rgba(80, 140, 255, 0.4);
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* ── Центральні кнопки ── */
+.mb-center-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  pointer-events: all;
+}
+
+/* ── Кнопки ── */
+.mb-btn {
+  pointer-events: all;
+  border: none;
+  border-radius: 10px;
+  background: rgba(10, 18, 50, 0.72);
+  color: #aabbff;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.08s, transform 0.08s;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(80, 140, 255, 0.2);
+}
+
+.mb-btn span {
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  color: rgba(150, 180, 255, 0.55);
+  display: block;
+}
+
+.mb-btn:active,
+.mb-btn:focus {
+  background: rgba(80, 140, 255, 0.28);
+  border-color: rgba(80, 140, 255, 0.6);
+  transform: scale(0.93);
+  outline: none;
+}
+
+/* Розміри різних кнопок */
+.mb-dpad-btn {
+  width: 54px;
+  height: 54px;
+}
+
+.mb-rot {
+  background: rgba(20, 10, 50, 0.72);
+  border-color: rgba(160, 80, 255, 0.2);
+  color: #cc99ff;
+}
+.mb-rot:active {
+  background: rgba(160, 80, 255, 0.25);
+  border-color: rgba(160, 80, 255, 0.6);
+}
+
+.mb-cam {
+  width: 60px;
+  height: 44px;
+  font-size: 14px;
+  background: rgba(10, 30, 50, 0.72);
+  border-color: rgba(80, 200, 255, 0.2);
+  color: #88ddff;
+}
+.mb-cam:active {
+  background: rgba(80, 200, 255, 0.2);
+  border-color: rgba(80, 200, 255, 0.6);
+}
+
+.mb-pause-btn {
+  width: 54px;
+  height: 44px;
+  font-size: 20px;
+  background: rgba(30, 30, 30, 0.72);
+  border-color: rgba(200, 200, 200, 0.15);
+  color: #aaaaaa;
+}
+.mb-pause-btn:active {
+  background: rgba(200, 200, 200, 0.15);
+}
+
+.mb-drop-soft {
+  width: 58px;
+  height: 54px;
+  font-size: 20px;
+  background: rgba(10, 40, 30, 0.72);
+  border-color: rgba(80, 255, 160, 0.2);
+  color: #66ffaa;
+}
+.mb-drop-soft:active {
+  background: rgba(80, 255, 160, 0.2);
+  border-color: rgba(80, 255, 160, 0.6);
+}
+
+.mb-drop-hard {
+  width: 58px;
+  height: 64px;
+  font-size: 22px;
+  background: rgba(40, 10, 10, 0.78);
+  border-color: rgba(255, 80, 80, 0.3);
+  color: #ff8888;
+}
+.mb-drop-hard:active {
+  background: rgba(255, 80, 80, 0.25);
+  border-color: rgba(255, 80, 80, 0.7);
+}
+
+/* ── Адаптація для малих екранів ── */
+@media (max-width: 380px) {
+  .mb-dpad-btn { width: 46px; height: 46px; font-size: 14px; }
+  .mb-dpad-center { width: 38px; height: 38px; }
+  .mb-drop-soft { width: 50px; height: 48px; }
+  .mb-drop-hard { width: 50px; height: 56px; }
+}
+
+/* Ховаємо HUD підказки на мобільному (вони заміняються кнопками) */
+@media (max-width: 600px) {
+  .controls-hint { display: none; }
+  .left-panel { top: 8px; transform: none; }
+  .right-panel { top: 8px; transform: none; }
+}
