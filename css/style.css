@@ -757,6 +757,14 @@ input[type="range"]::-webkit-slider-thumb:hover {
   display: block;
 }
 
+/* ДОДАТИ ЦЕЙ КЛАС ДЛЯ ІКОНОК */
+.mb-icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+  margin: 0 auto 2px;
+}
+
 .mb-btn:active,
 .mb-btn:focus {
   background: rgba(80, 140, 255, 0.28);
