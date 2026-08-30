@@ -157,15 +157,41 @@ let cameraStep = 0; // 0=NE, 1=NW, 2=SW, 3=SE
 export function getCameraStep() { return cameraStep; }
 
 // Адаптивна позиція камери
-const isMobile = window.innerWidth <= 768;
-if (isMobile) {
-  camera.position.set(10, boardCenterY + 4, 10);
-  camera.fov = 65;
-} else {
-  camera.position.set(14, boardCenterY + 8, 14);
-  camera.fov = 50;
+// Ізометричний кут нахилу камери (фіксований, як у оригінальному desktop-вигляді)
+const CAMERA_ELEV = Math.atan2(8, Math.SQRT2 * 14); // ~22°
+
+// Розраховує потрібну відстань камери, щоб стакан повністю влазив у кадр
+// незалежно від aspect ratio екрана (портрет/альбом)
+function computeCameraDistance(aspect, fovDeg) {
+  const vFov = THREE.MathUtils.degToRad(fovDeg);
+  const hFov = 2 * Math.atan(Math.tan(vFov / 2) * aspect);
+
+  const boardHeight = BOARD_H * CELL_SIZE;
+  const footprintDiagonal = Math.sqrt(BOARD_W * BOARD_W + BOARD_D * BOARD_D) * CELL_SIZE;
+
+  const MARGIN = 1.15;
+  const distForHeight = (boardHeight / 2 / Math.tan(vFov / 2)) * MARGIN;
+  const distForWidth  = (footprintDiagonal / 2 / Math.tan(hFov / 2)) * MARGIN;
+
+  return Math.max(distForHeight, distForWidth);
 }
-camera.updateProjectionMatrix();
+
+function updateCameraForViewport() {
+  const aspect = window.innerWidth / window.innerHeight;
+  camera.aspect = aspect;
+
+  const isMob = window.innerWidth <= 768;
+  camera.fov = isMob ? 60 : 50;
+
+  const dist  = computeCameraDistance(aspect, camera.fov);
+  const horiz = (dist * Math.cos(CAMERA_ELEV)) / Math.SQRT2; // x = z
+  const vert  = dist * Math.sin(CAMERA_ELEV);
+
+  camera.position.set(horiz, boardCenterY + vert, horiz);
+  camera.updateProjectionMatrix();
+}
+
+updateCameraForViewport();
 
 export function rotateCameraLeft() {
   // Q — поворот камери на 90° проти годинникової стрілки
@@ -188,12 +214,6 @@ export function rotateCameraRight() {
 }
 
 window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-
-  // Адаптуємо FOV при зміні орієнтації
-  const isMob = window.innerWidth <= 768;
-  camera.fov  = isMob ? 65 : 50;
-
-  camera.updateProjectionMatrix();
+  updateCameraForViewport();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
