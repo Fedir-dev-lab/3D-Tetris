@@ -1,23 +1,22 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { BOARD_W, BOARD_D, BOARD_H, CELL_SIZE, gridToWorld } from './board.js';
-
+ 
 export const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x080818);
-
+ 
 export const camera = new THREE.PerspectiveCamera(
   50, window.innerWidth / window.innerHeight, 0.1, 300
 );
 const boardCenterY = (BOARD_H * CELL_SIZE) / 2;
-camera.position.set(14, boardCenterY + 8, 14);
-
+ 
 const canvas = document.getElementById('game-canvas');
 export const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
+ 
 // Освітлення
 scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
@@ -28,15 +27,14 @@ scene.add(dirLight);
 const fillLight = new THREE.DirectionalLight(0x4466ff, 0.3);
 fillLight.position.set(-10, 10, -10);
 scene.add(fillLight);
-
+ 
 // Orbit controls
 export const orbitControls = new OrbitControls(camera, renderer.domElement);
-const boardCenter = new THREE.Vector3(0, boardCenterY, 0);
-orbitControls.target.copy(boardCenter);
+orbitControls.target.set(0, boardCenterY, 0);
 orbitControls.enableDamping = true;
 orbitControls.dampingFactor = 0.08;
 orbitControls.update();
-
+ 
 // Рамка поля (сітка)
 function buildBoardLines() {
   const group = new THREE.Group();
@@ -44,7 +42,7 @@ function buildBoardLines() {
   const halfW = (BOARD_W * CELL_SIZE) / 2;
   const halfD = (BOARD_D * CELL_SIZE) / 2;
   const H = BOARD_H * CELL_SIZE;
-
+ 
   // Підлога — сітка
   for (let i = 0; i <= BOARD_W; i++) {
     const x = -halfW + i * CELL_SIZE;
@@ -56,24 +54,24 @@ function buildBoardLines() {
     const pts = [new THREE.Vector3(-halfW, 0, z), new THREE.Vector3(halfW, 0, z)];
     group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat));
   }
-
+ 
   // Вертикальні лінії по кутах
   for (const [x, z] of [[-halfW,-halfD],[-halfW,halfD],[halfW,-halfD],[halfW,halfD]]) {
     const pts = [new THREE.Vector3(x, 0, z), new THREE.Vector3(x, H, z)];
     group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat));
   }
-
+ 
   // Верхня рамка
   const top = [
     [-halfW, H, -halfD], [halfW, H, -halfD],
     [halfW, H, halfD], [-halfW, H, halfD], [-halfW, H, -halfD]
   ].map(([x, y, z]) => new THREE.Vector3(x, y, z));
   group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(top), mat));
-
+ 
   return group;
 }
 scene.add(buildBoardLines());
-
+ 
 // Підлога
 const floorMesh = new THREE.Mesh(
   new THREE.PlaneGeometry(BOARD_W, BOARD_D),
@@ -83,15 +81,15 @@ floorMesh.rotation.x = -Math.PI / 2;
 floorMesh.position.set(0, 0.01, 0);
 floorMesh.receiveShadow = true;
 scene.add(floorMesh);
-
+ 
 // Групи мешів
 export const pieceMeshGroup = new THREE.Group();
 export const ghostMeshGroup = new THREE.Group();
 export const lockedMeshGroup = new THREE.Group();
 scene.add(pieceMeshGroup, ghostMeshGroup, lockedMeshGroup);
-
+ 
 const cubeGeo = new THREE.BoxGeometry(CELL_SIZE * 0.9, CELL_SIZE * 0.9, CELL_SIZE * 0.9);
-
+ 
 function syncGroup(group, count, color, opacity) {
   // Додаємо яких не вистачає
   while (group.children.length < count) {
@@ -114,20 +112,20 @@ function syncGroup(group, count, color, opacity) {
     }
   }
 }
-
+ 
 export function updatePieceVisual(cells, ox, oy, oz, color, ghostY) {
   syncGroup(pieceMeshGroup, cells.length, color, 1.0);
   syncGroup(ghostMeshGroup, cells.length, color, 0.18);
-
+ 
   cells.forEach(([dx, dy, dz], i) => {
     const w = gridToWorld(ox + dx, oy + dy, oz + dz);
     pieceMeshGroup.children[i].position.set(w.x, w.y, w.z);
-
+ 
     const gw = gridToWorld(ox + dx, ghostY + dy, oz + dz);
     ghostMeshGroup.children[i].position.set(gw.x, gw.y, gw.z);
   });
 }
-
+ 
 export function rebuildLockedVisual(board) {
   while (lockedMeshGroup.children.length > 0) {
     lockedMeshGroup.remove(lockedMeshGroup.children[0]);
@@ -151,48 +149,64 @@ export function rebuildLockedVisual(board) {
     }
   }
 }
-
+ 
 let cameraStep = 0; // 0=NE, 1=NW, 2=SW, 3=SE
-
+ 
 export function getCameraStep() { return cameraStep; }
-
-// Адаптивна позиція камери
-// Ізометричний кут нахилу камери (фіксований, як у оригінальному desktop-вигляді)
-const CAMERA_ELEV = Math.atan2(8, Math.SQRT2 * 14); // ~22°
-
+ 
+// ── Адаптивна камера ──────────────────────────────
+ 
+// Фіксований кут нахилу камери (як в оригінальному desktop-вигляді, ~22°)
+const CAMERA_ELEV = Math.atan2(8, Math.SQRT2 * 14);
+ 
+// Яку частку половини вертикального FOV на мобільних віддати під кнопки знизу
+// (стакан за рахунок цього "піднімається" вище і не ховається за кнопками)
+const MOBILE_RESERVE_FRACTION = 0.32;
+ 
 // Розраховує потрібну відстань камери, щоб стакан повністю влазив у кадр
 // незалежно від aspect ratio екрана (портрет/альбом)
 function computeCameraDistance(aspect, fovDeg) {
   const vFov = THREE.MathUtils.degToRad(fovDeg);
   const hFov = 2 * Math.atan(Math.tan(vFov / 2) * aspect);
-
+ 
   const boardHeight = BOARD_H * CELL_SIZE;
   const footprintDiagonal = Math.sqrt(BOARD_W * BOARD_W + BOARD_D * BOARD_D) * CELL_SIZE;
-
+ 
   const MARGIN = 1.15;
   const distForHeight = (boardHeight / 2 / Math.tan(vFov / 2)) * MARGIN;
   const distForWidth  = (footprintDiagonal / 2 / Math.tan(hFov / 2)) * MARGIN;
-
+ 
   return Math.max(distForHeight, distForWidth);
 }
-
+ 
 function updateCameraForViewport() {
   const aspect = window.innerWidth / window.innerHeight;
   camera.aspect = aspect;
-
+ 
   const isMob = window.innerWidth <= 768;
   camera.fov = isMob ? 60 : 50;
-
+ 
   const dist  = computeCameraDistance(aspect, camera.fov);
   const horiz = (dist * Math.cos(CAMERA_ELEV)) / Math.SQRT2; // x = z
   const vert  = dist * Math.sin(CAMERA_ELEV);
-
+ 
   camera.position.set(horiz, boardCenterY + vert, horiz);
+ 
+  // На мобільних дивимось трохи нижче центру стакану — сам стакан
+  // за рахунок цього зміщується вгору в кадрі, звільняючи місце знизу
+  let targetY = boardCenterY;
+  if (isMob) {
+    const vFov = THREE.MathUtils.degToRad(camera.fov);
+    targetY -= dist * MOBILE_RESERVE_FRACTION * Math.tan(vFov / 2);
+  }
+  orbitControls.target.set(0, targetY, 0);
+ 
   camera.updateProjectionMatrix();
+  orbitControls.update();
 }
-
+ 
 updateCameraForViewport();
-
+ 
 export function rotateCameraLeft() {
   // Q — поворот камери на 90° проти годинникової стрілки
   const t = orbitControls.target;
@@ -202,7 +216,7 @@ export function rotateCameraLeft() {
   cameraStep = (cameraStep + 1) % 4;
   orbitControls.update();
 }
-
+ 
 export function rotateCameraRight() {
   // E — поворот камери на 90° за годинниковою стрілкою
   const t = orbitControls.target;
@@ -212,7 +226,7 @@ export function rotateCameraRight() {
   cameraStep = (cameraStep + 3) % 4;
   orbitControls.update();
 }
-
+ 
 window.addEventListener('resize', () => {
   updateCameraForViewport();
   renderer.setSize(window.innerWidth, window.innerHeight);
