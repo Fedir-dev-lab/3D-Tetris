@@ -13,7 +13,8 @@ import { setupControls } from './controls.js';
 import {
   showMenu, showGame, showPause, hidePause,
   showGameOver, showScores, showSettings, showAbout,
-  showClearMessage, updateHUD, bindMenuButtons, getBaseInterval, loadSettings
+  showClearMessage, updateHUD, bindMenuButtons, getBaseInterval, loadSettings,
+  updateFullscreenButton
 } from './ui.js';
 import { setRendererTheme } from './renderer.js';
 import { initPreviews, setPreviewPiece, resetPreviews, renderPreviews } from './preview.js';
@@ -35,6 +36,19 @@ function applyTheme(theme) {
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', isLight ? '#f3f6fc' : '#3f2e6b');
   setRendererTheme(theme);
 }
+
+async function toggleFullscreen() {
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else await document.documentElement.requestFullscreen();
+  } catch (error) {
+    console.warn('Не вдалося увімкнути повноекранний режим:', error);
+  }
+}
+
+document.addEventListener('fullscreenchange', () => {
+  updateFullscreenButton(Boolean(document.fullscreenElement));
+});
 
 applyTheme(loadSettings().theme);
 
@@ -101,6 +115,7 @@ bindMenuButtons({
     if (confirm('Справді вийти з гри?')) window.close();
   },
   onThemeChange: applyTheme,
+  onFullscreen: toggleFullscreen,
 });
 
 setupControls(state, onBoardUpdate, onPause);

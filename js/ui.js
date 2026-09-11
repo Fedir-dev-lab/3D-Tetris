@@ -267,6 +267,7 @@ export function bindMenuButtons(cb) {
   document.getElementById('btn-start').onclick          = click(callbacks.onStart);
   document.getElementById('btn-scores').onclick         = click(callbacks.onScores);
   document.getElementById('btn-settings').onclick       = click(callbacks.onSettings);
+  document.getElementById('btn-fullscreen').onclick     = click(callbacks.onFullscreen);
   document.getElementById('btn-about').onclick          = click(callbacks.onAbout);
   document.getElementById('btn-exit').onclick           = click(callbacks.onExit);
   document.getElementById('btn-scores-back').onclick    = click(callbacks.onMenu);
@@ -290,6 +291,11 @@ export function bindMenuButtons(cb) {
     saveBindings(tempBindings);
     callbacks.onMenu();
   };
+}
+
+export function updateFullscreenButton(isFullscreen) {
+  const button = document.getElementById('btn-fullscreen');
+  if (button) button.textContent = isFullscreen ? 'Вийти з повного екрана' : 'На весь екран';
 }
 
 // Аудіо-контроли залишаються поза функцією, оскільки вони не залежать від callbacks
