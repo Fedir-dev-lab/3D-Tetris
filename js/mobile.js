@@ -65,5 +65,6 @@ export function initMobileControls(actions) {
   bindOnce('mb-hard-drop',  () => actions.hardDrop());
   bindOnce('mb-cam-left',   () => actions.cameraLeft());
   bindOnce('mb-cam-right',  () => actions.cameraRight());
+  bindOnce('mb-fullscreen', () => actions.fullscreen());
   bindOnce('mb-pause',      () => actions.pause());
 }

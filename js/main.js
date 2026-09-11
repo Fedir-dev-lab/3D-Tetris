@@ -38,17 +38,40 @@ function applyTheme(theme) {
 }
 
 async function toggleFullscreen() {
+  const root = document.documentElement;
+  const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
+  const request = root.requestFullscreen || root.webkitRequestFullscreen;
+  const exit = document.exitFullscreen || document.webkitExitFullscreen;
+
   try {
-    if (document.fullscreenElement) await document.exitFullscreen();
-    else await document.documentElement.requestFullscreen();
+    if (root.classList.contains('mobile-fullscreen')) {
+      root.classList.remove('mobile-fullscreen');
+      updateFullscreenButton(false);
+    } else if (fullscreenElement && exit) {
+      await exit.call(document);
+    } else if (request) {
+      await request.call(root);
+    } else {
+      // iOS Safari до підтримки Fullscreen API: використовуємо весь доступний viewport.
+      root.classList.add('mobile-fullscreen');
+      window.scrollTo(0, 1);
+      updateFullscreenButton(true);
+    }
   } catch (error) {
-    console.warn('Не вдалося увімкнути повноекранний режим:', error);
+    // Деякі мобільні браузери мають API, але забороняють його для сторінки.
+    root.classList.add('mobile-fullscreen');
+    window.scrollTo(0, 1);
+    updateFullscreenButton(true);
+    console.warn('Нативний повноекранний режим недоступний, увімкнено режим viewport:', error);
   }
 }
 
-document.addEventListener('fullscreenchange', () => {
-  updateFullscreenButton(Boolean(document.fullscreenElement));
-});
+function syncFullscreenState() {
+  updateFullscreenButton(Boolean(document.fullscreenElement || document.webkitFullscreenElement));
+}
+
+document.addEventListener('fullscreenchange', syncFullscreenState);
+document.addEventListener('webkitfullscreenchange', syncFullscreenState);
 
 applyTheme(loadSettings().theme);
 
@@ -170,6 +193,7 @@ initMobileControls({
   },
   cameraLeft:  () => rotateCameraLeft(),
   cameraRight: () => rotateCameraRight(),
+  fullscreen:  () => toggleFullscreen(),
   pause:       () => onPause(),
 });
 
