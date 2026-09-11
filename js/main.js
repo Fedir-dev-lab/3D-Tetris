@@ -13,8 +13,9 @@ import { setupControls } from './controls.js';
 import {
   showMenu, showGame, showPause, hidePause,
   showGameOver, showScores, showSettings, showAbout,
-  showClearMessage, updateHUD, bindMenuButtons, getBaseInterval
+  showClearMessage, updateHUD, bindMenuButtons, getBaseInterval, loadSettings
 } from './ui.js';
+import { setRendererTheme } from './renderer.js';
 import { initPreviews, setPreviewPiece, resetPreviews, renderPreviews } from './preview.js';
 import { initAudio, sfx, startMusic, stopMusic } from './audio.js';
 import { initMobileControls } from './mobile.js';
@@ -27,6 +28,15 @@ const MOVE_BACK    = [ 0, 0,  1];
 
 // ── Ініціалізація ────────────────────────────────
 initAudio();
+
+function applyTheme(theme) {
+  const isLight = theme === 'light';
+  document.documentElement.classList.toggle('light-theme', isLight);
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', isLight ? '#f3f6fc' : '#3f2e6b');
+  setRendererTheme(theme);
+}
+
+applyTheme(loadSettings().theme);
 
 const state    = createGameState();
 const previews = initPreviews();
@@ -90,6 +100,7 @@ bindMenuButtons({
   onExit: () => {
     if (confirm('Справді вийти з гри?')) window.close();
   },
+  onThemeChange: applyTheme,
 });
 
 setupControls(state, onBoardUpdate, onPause);

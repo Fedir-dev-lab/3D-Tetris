@@ -70,7 +70,8 @@ function buildBoardLines() {
  
   return group;
 }
-scene.add(buildBoardLines());
+const boardLines = buildBoardLines();
+scene.add(boardLines);
  
 // Підлога
 const floorMesh = new THREE.Mesh(
@@ -81,6 +82,14 @@ floorMesh.rotation.x = -Math.PI / 2;
 floorMesh.position.set(0, 0.01, 0);
 floorMesh.receiveShadow = true;
 scene.add(floorMesh);
+
+export function setRendererTheme(theme) {
+  const isLight = theme === 'light';
+  scene.background.setHex(isLight ? 0xf3f6fc : 0x080818);
+  boardLines.children.forEach(line => line.material.color.setHex(isLight ? 0x8294b2 : 0x1a2a4a));
+  floorMesh.material.color.setHex(isLight ? 0xe3e9f3 : 0x0d0d22);
+  fillLight.color.setHex(isLight ? 0x7a91bf : 0x4466ff);
+}
  
 // Групи мешів
 export const pieceMeshGroup = new THREE.Group();

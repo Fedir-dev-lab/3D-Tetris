@@ -937,3 +937,88 @@ input[type="range"]::-webkit-slider-thumb:hover {
   .hud-value { font-size: 15px; }
   .hud-block { padding: 4px 8px; }
 }
+
+/* ─── Світла тема ─── */
+html.light-theme, html.light-theme body {
+  background: #f3f6fc;
+  color: #172033;
+}
+
+html.light-theme .hud-block,
+html.light-theme .overlay-box {
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(55, 103, 190, 0.26);
+  box-shadow: 0 12px 36px rgba(42, 69, 117, 0.14);
+}
+
+html.light-theme .overlay {
+  background: rgba(229, 235, 246, 0.78);
+}
+
+html.light-theme .hud-label,
+html.light-theme .settings-label,
+html.light-theme .about-label,
+html.light-theme .about-version,
+html.light-theme .overlay-title,
+html.light-theme .score-row .rank {
+  color: #3564b8;
+}
+
+html.light-theme .hud-value,
+html.light-theme .game-title,
+html.light-theme .about-name,
+html.light-theme .about-author,
+html.light-theme .result-row span,
+html.light-theme .score-row .sc-val {
+  color: #172033;
+}
+
+html.light-theme .game-title { text-shadow: 0 0 24px rgba(53, 100, 184, 0.32); }
+html.light-theme .hint-row,
+html.light-theme .speed-hint,
+html.light-theme .result-row,
+html.light-theme .about-desc,
+html.light-theme .binding-action,
+html.light-theme .toggle-label { color: #4c5d79; }
+html.light-theme .bindings-hint,
+html.light-theme .about-desc.small,
+html.light-theme .about-role,
+html.light-theme .about-tech { color: #687793; }
+
+html.light-theme .key,
+html.light-theme .binding-key,
+html.light-theme .tech-tag,
+html.light-theme .score-row,
+html.light-theme .support-btn {
+  background: rgba(53, 100, 184, 0.08);
+  border-color: rgba(53, 100, 184, 0.25);
+  color: #315ca8;
+}
+
+html.light-theme .menu-btn {
+  background: rgba(53, 100, 184, 0.08);
+  border-color: rgba(53, 100, 184, 0.34);
+  color: #294f94;
+}
+html.light-theme .menu-btn:hover,
+html.light-theme .binding-key:hover,
+html.light-theme .support-btn:hover {
+  background: rgba(53, 100, 184, 0.17);
+  color: #172033;
+}
+html.light-theme .menu-btn.primary {
+  background: #3564b8;
+  border-color: #3564b8;
+  color: #fff;
+}
+html.light-theme .menu-btn.primary:hover { background: #294f94; }
+html.light-theme .speed-value-row { color: #315ca8; }
+html.light-theme input[type="range"] { background: rgba(53, 100, 184, 0.22); }
+html.light-theme input[type="range"]::-webkit-slider-thumb { background: #3564b8; }
+html.light-theme .settings-divider,
+html.light-theme .about-divider { background: rgba(53, 100, 184, 0.17); }
+html.light-theme .toggle-slider { background: rgba(53, 100, 184, 0.2); }
+html.light-theme .toggle input:checked + .toggle-slider { background: #3564b8; }
+html.light-theme #current-canvas,
+html.light-theme #next-canvas { background: rgba(53, 100, 184, 0.06); }
+html.light-theme .mb-btn { background: rgba(255, 255, 255, 0.82); color: #315ca8; }

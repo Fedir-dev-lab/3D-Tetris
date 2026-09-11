@@ -45,8 +45,8 @@ const SPEED_NAMES = [
 ];
 
 export function loadSettings() {
-  try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || { speed: 5 }; }
-  catch { return { speed: 5 }; }
+  try { return { speed: 5, theme: 'dark', ...JSON.parse(localStorage.getItem(SETTINGS_KEY)) }; }
+  catch { return { speed: 5, theme: 'dark' }; }
 }
 
 function saveSettingsData(settings) {
@@ -136,9 +136,10 @@ export function showSettings() {
   hud.classList.add('hidden');
   cancelCapture();
 
-  const { speed } = loadSettings();
+  const { speed, theme } = loadSettings();
   speedSlider.value = speed;
   speedLabel.textContent = `${SPEED_NAMES[speed - 1]} (${speed})`;
+  document.getElementById('theme-toggle').checked = theme === 'light';
 
   const audioCfg = getAudioCfg();
   document.getElementById('sfx-toggle').checked = audioCfg.sfxOn;
@@ -281,7 +282,11 @@ export function bindMenuButtons(cb) {
   document.getElementById('btn-settings-save').onclick = () => {
     sfx.menuClick();
     cancelCapture();
-    saveSettingsData({ speed: Number(speedSlider.value) });
+    saveSettingsData({
+      ...loadSettings(),
+      speed: Number(speedSlider.value),
+      theme: document.getElementById('theme-toggle').checked ? 'light' : 'dark',
+    });
     saveBindings(tempBindings);
     callbacks.onMenu();
   };
@@ -301,6 +306,12 @@ document.getElementById('music-toggle').addEventListener('change', (e) => {
 });
 document.getElementById('music-vol').addEventListener('input', (e) => {
   setAudioCfg({ musicVol: e.target.value / 100 });
+});
+
+document.getElementById('theme-toggle').addEventListener('change', (e) => {
+  const theme = e.target.checked ? 'light' : 'dark';
+  saveSettingsData({ ...loadSettings(), theme });
+  callbacks.onThemeChange?.(theme);
 });
 
 speedSlider.addEventListener('input', () => {
