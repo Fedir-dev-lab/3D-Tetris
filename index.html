@@ -40,27 +40,27 @@
   <div id="hud" class="hidden">
     <div class="hud-panel left-panel">
       <div class="hud-block">
-        <div class="hud-label">РАХУНОК</div>
+        <div class="hud-label" data-i18n="score">РАХУНОК</div>
         <div class="hud-value" id="score">0</div>
       </div>
       <div class="hud-block">
-        <div class="hud-label">РІВЕНЬ</div>
+        <div class="hud-label" data-i18n="level">РІВЕНЬ</div>
         <div class="hud-value" id="level">1</div>
       </div>
       <div class="hud-block">
-        <div class="hud-label">ЛІНІЙ</div>
+        <div class="hud-label" data-i18n="lines">ЛІНІЙ</div>
         <div class="hud-value" id="lines">0</div>
       </div>
       <div class="hud-block controls-hint">
-        <div class="hud-label">КЕРУВАННЯ</div>
-        <div class="hint-row"><span class="key">W</span><span class="key">S</span> вглиб / назовні</div>
-        <div class="hint-row"><span class="key">A</span><span class="key">D</span> ліво / право</div>
-        <div class="hint-row"><span class="key">↓</span> прискорити</div>
-        <div class="hint-row"><span class="key">Q</span><span class="key">E</span> камера</div>
-        <div class="hint-row"><span class="key">F</span><span class="key">H</span> поворот Y</div>
-        <div class="hint-row"><span class="key">R</span><span class="key">G</span> поворот X</div>
-        <div class="hint-row"><span class="key">ПРОБІЛ</span> дроп</div>
-        <div class="hint-row"><span class="key">P</span> пауза</div>
+        <div class="hud-label" data-i18n="controls">КЕРУВАННЯ</div>
+        <div class="hint-row"><span class="key">W</span><span class="key">S</span> <span data-i18n="depth">вглиб / назовні</span></div>
+        <div class="hint-row"><span class="key">A</span><span class="key">D</span> <span data-i18n="leftRight">ліво / право</span></div>
+        <div class="hint-row"><span class="key">↓</span> <span data-i18n="softDrop">прискорити</span></div>
+        <div class="hint-row"><span class="key">Q</span><span class="key">E</span> <span data-i18n="camera">камера</span></div>
+        <div class="hint-row"><span class="key">F</span><span class="key">H</span> <span data-i18n="rotateY">поворот Y</span></div>
+        <div class="hint-row"><span class="key">R</span><span class="key">G</span> <span data-i18n="rotateX">поворот X</span></div>
+        <div class="hint-row"><span class="key">ПРОБІЛ</span> <span data-i18n="drop">дроп</span></div>
+        <div class="hint-row"><span class="key">P</span> <span data-i18n="pause">пауза</span></div>
       </div>
     </div>
   </div>
@@ -68,11 +68,11 @@
     <!-- Правий панель -->
     <div class="hud-panel right-panel">
       <div class="hud-block preview-block">
-        <div class="hud-label">ЗАРАЗ</div>
+        <div class="hud-label" data-i18n="current">ЗАРАЗ</div>
         <canvas id="current-canvas" width="120" height="120"></canvas>
       </div>
       <div class="hud-block preview-block">
-        <div class="hud-label">НАСТУПНА</div>
+        <div class="hud-label" data-i18n="next">НАСТУПНА</div>
         <canvas id="next-canvas" width="120" height="120"></canvas>
       </div>
     </div>
@@ -81,25 +81,26 @@
   <div id="menu-screen" class="overlay">
     <div class="overlay-box">
       <div class="game-title">3D<br><span>TETRIS</span></div>
-      <button class="menu-btn primary" id="btn-start">Грати</button>
-      <button class="menu-btn" id="btn-scores">Рекорди</button>
-      <button class="menu-btn" id="btn-settings">Налаштування</button>
-      <button class="menu-btn" id="btn-fullscreen">На весь екран</button>
-      <button class="menu-btn" id="btn-about">Про проєкт</button>
-      <button class="menu-btn danger" id="btn-exit">Вийти</button>
+      <button class="menu-btn primary" id="btn-start" data-i18n="play">Грати</button>
+      <button class="menu-btn" id="btn-scores" data-i18n="scores">Рекорди</button>
+      <button class="menu-btn" id="btn-settings" data-i18n="settings">Налаштування</button>
+      <button class="menu-btn" id="btn-fullscreen" data-i18n="fullscreen">На весь екран</button>
+      <button class="menu-btn" id="btn-about" data-i18n="about">Про проєкт</button>
+      <button class="menu-btn danger" id="btn-exit" data-i18n="exit">Вийти</button>
+      <label class="language-picker"><span data-i18n="language">Мова</span><select id="language-select" aria-label="Мова"><option value="uk">Українська</option><option value="ru">Русский</option></select></label>
     </div>
   </div>
 
   <!-- Про проєкт -->
   <div id="about-screen" class="overlay hidden">
     <div class="overlay-box about-box">
-      <div class="overlay-title">ПРО ПРОЄКТ</div>
+      <div class="overlay-title" data-i18n="aboutTitle">ПРО ПРОЄКТ</div>
 
       <div class="about-section">
         <div class="about-icon">🎮</div>
         <div class="about-name">3D Tetris</div>
-        <div class="about-version">Версія 1.1</div>
-        <div class="about-desc">
+        <div class="about-version" data-i18n="version">Версія 1.1</div>
+        <div class="about-desc" data-i18n="aboutDescription" data-i18n-html>
           Класичний тетріс у тривимірному просторі.<br>
           Поле 6×6×20, повне обертання фігур по всіх осях,<br>
           плавна анімація та таблиця рекордів.
@@ -111,16 +112,16 @@
       <div class="about-divider"></div>
 
       <div class="about-section">
-        <div class="about-label">РОЗРОБНИК</div>
+        <div class="about-label" data-i18n="developer">РОЗРОБНИК</div>
         <div class="about-author">Fedir</div>
-        <div class="about-role">Ідея, дизайн, код</div>
+        <div class="about-role" data-i18n="developerRole">Ідея, дизайн, код</div>
       </div>
 
       <div class="about-divider"></div>
 
       <div class="about-section">
-        <div class="about-label">ПІДТРИМАТИ ПРОЄКТ</div>
-        <div class="about-desc">Якщо тобі подобається гра —<br>підтримай розробника ☕</div>
+        <div class="about-label" data-i18n="support">ПІДТРИМАТИ ПРОЄКТ</div>
+        <div class="about-desc" data-i18n="supportDescription" data-i18n-html>Якщо тобі подобається гра —<br>підтримай розробника ☕</div>
         <div class="support-buttons">
           <a class="support-btn" href="https://www.buymeacoffee.com/" target="_blank">
             ☕ Buy me a coffee
@@ -133,43 +134,43 @@
           </a>
         </div>
         <div class="about-desc small">
-          Зірочка на GitHub теж дуже допомагає 🙏
+          <span data-i18n="githubHelp">Зірочка на GitHub теж дуже допомагає 🙏</span>
         </div>
       </div>
 
       <div class="about-divider"></div>
 
       <div class="about-tech">
-        Зроблено з ❤️ за допомогою
+        <span data-i18n="madeWith">Зроблено з ❤️ за допомогою</span>
         <span class="tech-tag">Three.js</span>
         <span class="tech-tag">JavaScript</span>
         <span class="tech-tag">WebGL</span>
       </div>
 
-      <button class="menu-btn" id="btn-about-back">Назад</button>
+      <button class="menu-btn" id="btn-about-back" data-i18n="back">Назад</button>
     </div>
   </div>
 
   <!-- Таблиця рекордів -->
   <div id="scores-screen" class="overlay hidden">
     <div class="overlay-box">
-      <div class="overlay-title">РЕКОРДИ</div>
+      <div class="overlay-title" data-i18n="scores">РЕКОРДИ</div>
       <div id="scores-list"></div>
-      <button class="menu-btn" id="btn-scores-back">Назад</button>
+      <button class="menu-btn" id="btn-scores-back" data-i18n="back">Назад</button>
     </div>
   </div>
 
   <div id="settings-screen" class="overlay hidden">
     <div class="overlay-box settings-box">
-      <div class="overlay-title">НАЛАШТУВАННЯ</div>
+      <div class="overlay-title" data-i18n="settingsTitle">НАЛАШТУВАННЯ</div>
 
       <!-- Швидкість -->
       <div class="settings-group">
-        <div class="settings-label">Швидкість падіння</div>
+        <div class="settings-label" data-i18n="speed">Швидкість падіння</div>
         <div class="speed-row">
-          <span class="speed-hint">Повільно</span>
+          <span class="speed-hint" data-i18n="slow">Повільно</span>
           <input type="range" id="speed-slider" min="1" max="10" value="5" step="1">
-          <span class="speed-hint">Швидко</span>
+          <span class="speed-hint" data-i18n="fast">Швидко</span>
         </div>
         <div class="speed-value-row">
           <span id="speed-label">Нормально</span>
@@ -180,10 +181,10 @@
 
       <!-- Звук -->
       <div class="settings-group">
-        <div class="settings-label">Звук</div>
+        <div class="settings-label" data-i18n="sound">Звук</div>
 
         <div class="toggle-row">
-          <span class="toggle-label">Звукові ефекти</span>
+          <span class="toggle-label" data-i18n="soundEffects">Звукові ефекти</span>
           <label class="toggle">
             <input type="checkbox" id="sfx-toggle" checked>
             <span class="toggle-slider"></span>
@@ -196,7 +197,7 @@
         </div>
 
         <div class="toggle-row">
-          <span class="toggle-label">Музика</span>
+          <span class="toggle-label" data-i18n="music">Музика</span>
           <label class="toggle">
             <input type="checkbox" id="music-toggle" checked>
             <span class="toggle-slider"></span>
@@ -213,9 +214,9 @@
 
       <!-- Тема оформлення -->
       <div class="settings-group">
-        <div class="settings-label">Тема оформлення</div>
+        <div class="settings-label" data-i18n="theme">Тема оформлення</div>
         <div class="toggle-row">
-          <span class="toggle-label">Світла тема</span>
+          <span class="toggle-label" data-i18n="lightTheme">Світла тема</span>
           <label class="toggle">
             <input type="checkbox" id="theme-toggle">
             <span class="toggle-slider"></span>
@@ -227,15 +228,15 @@
 
       <!-- Клавіші -->
       <div class="settings-group">
-        <div class="settings-label">Клавіші керування</div>
-        <div class="bindings-hint">Натисни на клавішу щоб перебіндити · ESC — скасувати</div>
+        <div class="settings-label" data-i18n="keyBindings">Клавіші керування</div>
+        <div class="bindings-hint" data-i18n="bindingsHint">Натисни на клавішу щоб перебіндити · ESC — скасувати</div>
         <div id="bindings-list" class="bindings-list"></div>
-        <button class="menu-btn small" id="btn-reset-bindings">↺ Скинути до стандартних</button>
+        <button class="menu-btn small" id="btn-reset-bindings" data-i18n="resetBindings">↺ Скинути до стандартних</button>
       </div>
 
       <div class="settings-actions">
-        <button class="menu-btn primary" id="btn-settings-save">Зберегти</button>
-        <button class="menu-btn" id="btn-settings-back">Назад</button>
+        <button class="menu-btn primary" id="btn-settings-save" data-i18n="save">Зберегти</button>
+        <button class="menu-btn" id="btn-settings-back" data-i18n="back">Назад</button>
       </div>
     </div>
   </div>
@@ -243,9 +244,9 @@
   <!-- Пауза -->
   <div id="pause-screen" class="overlay hidden">
     <div class="overlay-box">
-      <div class="overlay-title">ПАУЗА</div>
-      <button class="menu-btn primary" id="btn-resume">Продовжити</button>
-      <button class="menu-btn" id="btn-pause-menu">Головне меню</button>
+      <div class="overlay-title" data-i18n="pause">ПАУЗА</div>
+      <button class="menu-btn primary" id="btn-resume" data-i18n="resume">Продовжити</button>
+      <button class="menu-btn" id="btn-pause-menu" data-i18n="mainMenu">Головне меню</button>
     </div>
   </div>
 
@@ -254,13 +255,13 @@
     <div class="overlay-box">
       <div class="overlay-title">GAME OVER</div>
       <div class="result-block">
-        <div class="result-row">Рахунок <span id="final-score">0</span></div>
-        <div class="result-row">Рівень <span id="final-level">0</span></div>
-        <div class="result-row">Ліній <span id="final-lines">0</span></div>
+        <div class="result-row"><span data-i18n="score">Рахунок</span> <span id="final-score">0</span></div>
+        <div class="result-row"><span data-i18n="level">Рівень</span> <span id="final-level">0</span></div>
+        <div class="result-row"><span data-i18n="lines">Ліній</span> <span id="final-lines">0</span></div>
       </div>
-      <div id="new-record" class="new-record hidden">🏆 Новий рекорд!</div>
-      <button class="menu-btn primary" id="btn-restart">Знову</button>
-      <button class="menu-btn" id="btn-gameover-menu">Головне меню</button>
+      <div id="new-record" class="new-record hidden" data-i18n="newRecord">🏆 Новий рекорд!</div>
+      <button class="menu-btn primary" id="btn-restart" data-i18n="again">Знову</button>
+      <button class="menu-btn" id="btn-gameover-menu" data-i18n="mainMenu">Головне меню</button>
     </div>
   </div>
 
@@ -282,10 +283,10 @@
 
     <!-- Верхня панель -->
     <div class="mb-top-bar">
-      <button class="mb-btn mb-cam" id="mb-cam-left">Q<br><span>cam</span></button>
-      <button class="mb-btn mb-fullscreen" id="mb-fullscreen" aria-label="На весь екран">⛶<br><span>full</span></button>
+      <button class="mb-btn mb-cam" id="mb-cam-left">Q<br><span data-i18n="mobileCamera">кам.</span></button>
+      <button class="mb-btn mb-fullscreen" id="mb-fullscreen" aria-label="Повний екран" data-i18n-aria="fullscreen">⛶<br><span data-i18n="mobileFullscreen">повн.</span></button>
       <button class="mb-btn mb-pause-btn" id="mb-pause">⏸</button>
-      <button class="mb-btn mb-cam" id="mb-cam-right">E<br><span>cam</span></button>
+      <button class="mb-btn mb-cam" id="mb-cam-right">E<br><span data-i18n="mobileCamera">кам.</span></button>
     </div>
 
     <!-- Нижня зона -->
@@ -316,13 +317,13 @@
             <span>S</span>
           </button>
         </div>
-        <div class="mb-dpad-label">РУХ</div>
+        <div class="mb-dpad-label" data-i18n="movement">РУХ</div>
       </div>
 
       <!-- Центр: drop кнопки -->
       <div class="mb-center-btns">
-        <button class="mb-btn mb-drop-soft" id="mb-soft-drop">↓<br><span>soft</span></button>
-        <button class="mb-btn mb-drop-hard" id="mb-hard-drop">⬇<br><span>drop</span></button>
+        <button class="mb-btn mb-drop-soft" id="mb-soft-drop">↓<br><span data-i18n="mobileSoftDrop">м’яко</span></button>
+        <button class="mb-btn mb-drop-hard" id="mb-hard-drop">⬇<br><span data-i18n="mobileDrop">дроп</span></button>
       </div>
 
       <!-- Правий D-pad: обертання -->
@@ -358,7 +359,7 @@
             <span>G</span>
           </button>
         </div>
-        <div class="mb-dpad-label">ПОВОРОТ</div>
+        <div class="mb-dpad-label" data-i18n="rotation">ПОВОРОТ</div>
       </div>
 
     </div>

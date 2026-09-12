@@ -15,7 +15,7 @@ export const DEFAULT_BINDINGS = {
   pause:       'KeyP',
 };
 
-export const ACTION_LABELS = {
+const ACTION_LABELS = {
   moveLeft:    'Рух ліворуч  (X-)',
   moveRight:   'Рух праворуч (X+)',
   moveForward: 'Рух вглиб    (Z-)',
@@ -29,6 +29,25 @@ export const ACTION_LABELS = {
   cameraRight: 'Камера право',
   pause:       'Пауза',
 };
+
+const ACTION_LABELS_RU = {
+  moveLeft:    'Движение влево  (X-)',
+  moveRight:   'Движение вправо (X+)',
+  moveForward: 'Движение вглубь (Z-)',
+  moveBack:    'Движение наружу (Z+)',
+  hardDrop:    'Жёсткий сброс',
+  rotateH:     'Поворот Y →',
+  rotateF:     'Поворот Y ←',
+  rotateR:     'Поворот X ↑',
+  rotateG:     'Поворот X ↓',
+  cameraLeft:  'Камера влево',
+  cameraRight: 'Камера вправо',
+  pause:       'Пауза',
+};
+
+export function getActionLabels(language) {
+  return language === 'ru' ? ACTION_LABELS_RU : ACTION_LABELS;
+}
 
 export function loadBindings() {
   try {
@@ -48,9 +67,9 @@ export function resetBindings() {
   return { ...DEFAULT_BINDINGS };
 }
 
-export function getKeyLabel(code) {
+export function getKeyLabel(code, language = 'uk') {
   const map = {
-    Space:        'Пробіл',
+    Space:        language === 'ru' ? 'Пробел' : 'Пробіл',
     ArrowUp:      '↑',
     ArrowDown:    '↓',
     ArrowLeft:    '←',

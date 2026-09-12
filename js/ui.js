@@ -1,4 +1,5 @@
 import { getAudioCfg, setAudioCfg, sfx, startMusic, stopMusic } from './audio.js';
+import { applyLanguage, getLanguage, setLanguage, t } from './i18n.js';
 
 // ── Елементи ──────────────────────────────────────
 const hud            = document.getElementById('hud');
@@ -22,7 +23,7 @@ const scoresList     = document.getElementById('scores-list');
 const speedSlider    = document.getElementById('speed-slider');
 const speedLabel     = document.getElementById('speed-label');
 
-import { loadBindings, saveBindings, resetBindings, getKeyLabel, ACTION_LABELS, DEFAULT_BINDINGS } from './bindings.js';
+import { loadBindings, saveBindings, resetBindings, getKeyLabel, getActionLabels } from './bindings.js';
 
 // ── Стан прив'язки клавіш ──────────────────────
 let tempBindings     = {};
@@ -36,13 +37,11 @@ const SETTINGS_KEY = 'tetris3d_settings';
 // Базові інтервали падіння для кожного рівня слайдера (1–10)
 const SPEED_BASE_MS = [1400, 1200, 1050, 900, 800, 650, 500, 380, 280, 180];
 
-const SPEED_NAMES = [
-  'Дуже повільно', 'Дуже повільно',
-  'Повільно',      'Повільно',
-  'Нормально',     'Нормально',
-  'Швидко',        'Швидко',
-  'Дуже швидко',   'Дуже швидко',
-];
+function getSpeedName(speed) {
+  const names = [t('verySlow'), t('verySlow'), t('slow'), t('slow'), t('normal'),
+    t('normal'), t('fast'), t('fast'), t('veryFast'), t('veryFast')];
+  return names[speed - 1];
+}
 
 export function loadSettings() {
   try { return { speed: 5, theme: 'dark', ...JSON.parse(localStorage.getItem(SETTINGS_KEY)) }; }
@@ -64,7 +63,7 @@ const STORAGE_KEY = 'tetris3d_scores';
 
 export function saveScore(score, level, lines) {
   const scores = loadScores();
-  scores.push({ score, level, lines, date: new Date().toLocaleDateString('uk') });
+  scores.push({ score, level, lines, date: new Date().toLocaleDateString(getLanguage()) });
   scores.sort((a, b) => b.score - a.score);
   scores.splice(10);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(scores));
@@ -117,13 +116,13 @@ export function showScores() {
   hud.classList.add('hidden');
   const scores = loadScores();
   if (scores.length === 0) {
-    scoresList.innerHTML = '<div class="no-scores">Ще немає рекордів</div>';
+    scoresList.innerHTML = `<div class="no-scores">${t('noScores')}</div>`;
   } else {
     scoresList.innerHTML = scores.map((s, i) => `
       <div class="score-row">
         <span class="rank">${i + 1}</span>
         <span>${s.date}</span>
-        <span>Рів. ${s.level}</span>
+        <span>${t('levelShort')} ${s.level}</span>
         <span class="sc-val">${s.score}</span>
       </div>
     `).join('');
@@ -138,7 +137,7 @@ export function showSettings() {
 
   const { speed, theme } = loadSettings();
   speedSlider.value = speed;
-  speedLabel.textContent = `${SPEED_NAMES[speed - 1]} (${speed})`;
+  speedLabel.textContent = `${getSpeedName(speed)} (${speed})`;
   document.getElementById('theme-toggle').checked = theme === 'light';
 
   const audioCfg = getAudioCfg();
@@ -167,11 +166,10 @@ export function updateHUD(score, level, lines) {
 }
 
 // ── Повідомлення про очищення ─────────────────────
-const MSG = ['', 'ОДНА!', 'ДУБЛЬ!', 'ТРИПЛ!', 'TETRIS!'];
-
 export function showClearMessage(count) {
   if (!count) return;
-  clearMsg.textContent = MSG[Math.min(count, 4)];
+  const messages = ['', t('one'), t('double'), t('triple'), 'TETRIS!'];
+  clearMsg.textContent = messages[Math.min(count, 4)];
   clearMsg.classList.remove('hidden');
   clearMsg.style.animation = 'none';
   clearMsg.offsetHeight;
@@ -184,7 +182,7 @@ function cancelCapture() {
   const btn = bindingBtns[pendingAction];
   if (btn) {
     btn.classList.remove('capturing');
-    btn.textContent = getKeyLabel(tempBindings[pendingAction]);
+    btn.textContent = getKeyLabel(tempBindings[pendingAction], getLanguage());
   }
   if (captureListener) {
     window.removeEventListener('keydown', captureListener, true);
@@ -198,7 +196,7 @@ function rebuildBindingsUI() {
   if (!list) return;
   list.innerHTML = '';
 
-  for (const [action, label] of Object.entries(ACTION_LABELS)) {
+  for (const [action, label] of Object.entries(getActionLabels(getLanguage()))) {
     const row = document.createElement('div');
     row.className = 'binding-row';
 
@@ -208,7 +206,7 @@ function rebuildBindingsUI() {
 
     const btn = document.createElement('button');
     btn.className = 'binding-key';
-    btn.textContent = getKeyLabel(tempBindings[action]);
+    btn.textContent = getKeyLabel(tempBindings[action], getLanguage());
     bindingBtns[action] = btn;
 
     btn.addEventListener('click', () => {
@@ -233,7 +231,7 @@ function rebuildBindingsUI() {
         if (conflict) {
           tempBindings[conflict] = tempBindings[action];
           if (bindingBtns[conflict]) {
-            bindingBtns[conflict].textContent = getKeyLabel(tempBindings[conflict]);
+            bindingBtns[conflict].textContent = getKeyLabel(tempBindings[conflict], getLanguage());
             bindingBtns[conflict].classList.remove('conflict');
           }
         }
@@ -243,7 +241,7 @@ function rebuildBindingsUI() {
         captureListener = null;
         pendingAction = null;
         btn.classList.remove('capturing');
-        btn.textContent = getKeyLabel(e.code);
+        btn.textContent = getKeyLabel(e.code, getLanguage());
       };
 
       window.addEventListener('keydown', captureListener, true);
@@ -295,7 +293,7 @@ export function bindMenuButtons(cb) {
 
 export function updateFullscreenButton(isFullscreen) {
   const button = document.getElementById('btn-fullscreen');
-  if (button) button.textContent = isFullscreen ? 'Вийти з повного екрана' : 'На весь екран';
+  if (button) button.textContent = isFullscreen ? t('exitFullscreen') : t('fullscreen');
 }
 
 // Аудіо-контроли залишаються поза функцією, оскільки вони не залежать від callbacks
@@ -322,5 +320,16 @@ document.getElementById('theme-toggle').addEventListener('change', (e) => {
 
 speedSlider.addEventListener('input', () => {
   const v = Number(speedSlider.value);
-  speedLabel.textContent = `${SPEED_NAMES[v - 1]} (${v})`;
+  speedLabel.textContent = `${getSpeedName(v)} (${v})`;
 });
+
+document.getElementById('language-select').addEventListener('change', (e) => setLanguage(e.target.value));
+document.addEventListener('languagechange', () => {
+  const v = Number(speedSlider.value);
+  speedLabel.textContent = `${getSpeedName(v)} (${v})`;
+  if (!settingsScreen.classList.contains('hidden')) rebuildBindingsUI();
+  if (!scoresScreen.classList.contains('hidden')) showScores();
+  updateFullscreenButton(Boolean(document.fullscreenElement || document.webkitFullscreenElement));
+});
+
+applyLanguage();

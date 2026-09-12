@@ -20,6 +20,7 @@ import { setRendererTheme } from './renderer.js';
 import { initPreviews, setPreviewPiece, resetPreviews, renderPreviews } from './preview.js';
 import { initAudio, sfx, startMusic, stopMusic } from './audio.js';
 import { initMobileControls } from './mobile.js';
+import { t } from './i18n.js';
 
 // ── Константи руху ────────────────────────────────
 const MOVE_LEFT    = [-1, 0,  0];
@@ -135,7 +136,7 @@ bindMenuButtons({
   onMenu:     showMenu,
   onResume:   onPause,
   onExit: () => {
-    if (confirm('Справді вийти з гри?')) window.close();
+    if (confirm(t('exitConfirm'))) window.close();
   },
   onThemeChange: applyTheme,
   onFullscreen: toggleFullscreen,
